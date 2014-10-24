@@ -24,8 +24,8 @@ install_requires = [
     'django-crispy-forms==1.4.0',
     'django-paging==0.2.5',
     'enum34==1.0.3',
-    'django-enumfields==0.1.2'
-    'requests==2.4.3'
+    'django-enumfields==0.1.2',
+    'requests==2.4.3',
 ]
 
 postgres_requires = [
@@ -59,7 +59,7 @@ setup(
     url='https://github.com/Stupeflix/japper',
     description='A multi backend alerting tool',
     long_description=open('README.rst').read(),
-    packages=find_packages(''),
+    packages=find_packages(),
     zip_safe=False,
     install_requires=install_requires,
     extras_require={
