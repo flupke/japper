@@ -26,6 +26,8 @@ install_requires = [
     'enum34==1.0.3',
     'django-enumfields==0.1.2',
     'requests==2.4.3',
+    'django-vanilla-views==1.0.3',
+    'django-environ==0.3.0',
 ]
 
 postgres_requires = [
