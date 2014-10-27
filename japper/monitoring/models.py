@@ -28,17 +28,18 @@ class CheckResult(models.Model):
         index_together = ['source_type', 'source_id']
 
 
+class Status(Enum):
+
+    passing = 1
+    warning = 2
+    critical = 3
+    flapping = 4
+
+
 class State(models.Model):
     '''
     The current state for a service or a node.
     '''
-
-    class Status(Enum):
-
-        passing = 1
-        warning = 2
-        critical = 3
-        flapping = 4
 
     source_type = models.ForeignKey(ContentType)
     source_id = models.PositiveIntegerField()

@@ -24,7 +24,7 @@ install_requires = [
     'django-crispy-forms==1.4.0',
     'django-paging==0.2.5',
     'enum34==1.0.3',
-    'django-enumfields==0.1.2',
+    'django-enumfields==0.5.1',
     'requests==2.4.3',
     'django-vanilla-views==1.0.3',
     'django-environ==0.3.0',
