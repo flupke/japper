@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <h1>Monitoring sources</h1>
+
+    {% for backend in backends %}
+    <h2>{{ backend.get_name|title }}</h2>
+    <ul>
+        {% for source in backend.get_monitoring_sources %}
+        <li><a href="{{ source.get_absolute_url }}">{{ source }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{% url backend.get_create_source_view %}" class="btn btn-primary">Create source</a>
+    {% endfor %}
+
+</div>
+{% endblock %}

@@ -77,8 +77,7 @@ setup(
     include_package_data=True,
     entry_points={
         'japper.monitoring_backends': [
-            'consul = japper.consul.plugin:main',
-            'graphite = japper.graphite.plugin:main',
+            'consul = japper.consul.plugin:create_backend',
         ],
     },
     classifiers=[

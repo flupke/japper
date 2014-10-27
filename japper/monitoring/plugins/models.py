@@ -1,16 +1,25 @@
 import abc
 
 import six
+from enum import Enum
 from django.db import models
 from django.db.models.base import ModelBase
 
 
-class MonitoringSourceBase(ModelBase, abc.ABCMeta):
+class CheckStatus(Enum):
+
+    passing = 1
+    warning = 2
+    critical = 3
+
+
+class MonitoringSourceMeta(abc.ABCMeta, ModelBase):
 
     pass
 
 
-class MonitoringSource(six.with_metaclass(MonitoringSourceBase, models.Model)):
+class MonitoringSourceBase(six.with_metaclass(MonitoringSourceMeta,
+        models.Model)):
     '''
     Base model for monitoring sources.
     '''

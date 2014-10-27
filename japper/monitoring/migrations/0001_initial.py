@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import japper.monitoring.plugins
+import japper.monitoring.plugins.models
 import japper.monitoring.models
 import jsonfield.fields
 import enumfields.fields
@@ -22,7 +22,8 @@ class Migration(migrations.Migration):
                 ('timestamp', models.DateTimeField(auto_now_add=True, db_index=True)),
                 ('source_id', models.PositiveIntegerField()),
                 ('host', models.CharField(max_length=255, null=True)),
-                ('status', enumfields.fields.EnumIntegerField(max_length=10, enum=japper.monitoring.plugins.CheckStatus)),
+                ('status', enumfields.fields.EnumIntegerField(max_length=10,
+                    enum=japper.monitoring.plugins.models.CheckStatus)),
                 ('metrics', jsonfield.fields.JSONField(null=True)),
                 ('source_type', models.ForeignKey(to='contenttypes.ContentType')),
             ],

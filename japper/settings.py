@@ -15,6 +15,8 @@ env = environ.Env(
     STATIC_ROOT=(str, None),
 )
 
+from japper.monitoring.plugins import get_installed_apps
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
@@ -30,8 +32,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
-
-INSTALLED_APPS = (
+INSTALLED_APPS = get_installed_apps((
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,8 +40,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'crispy_forms',
+
+    'japper',
     'japper.monitoring',
-)
+))
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -83,3 +87,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = env('STATIC_ROOT')
+
+# Crispy forms settings
+CRISPY_TEMPLATE_PACK = 'bootstrap3'

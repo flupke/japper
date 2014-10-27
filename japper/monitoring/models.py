@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from enum import Enum
 from jsonfield import JSONField
 from enumfields import EnumIntegerField
-from .plugins import CheckStatus
+from .plugins.models import CheckStatus
 
 
 class CheckResult(models.Model):
