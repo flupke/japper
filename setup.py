@@ -28,6 +28,7 @@ install_requires = [
     'requests==2.4.3',
     'django-vanilla-views==1.0.3',
     'django-environ==0.3.0',
+    'jsonfield==1.0.0',
 ]
 
 postgres_requires = [
