@@ -18,6 +18,7 @@ def update_monitoring_states():
             # Get check results and removed hosts
             check_results = source.get_check_results()
             removed_hosts = set(source.get_removed_hosts())
+            already_removed = set()
 
             # Create CheckResult objects and update or delete states
             for result in check_results:
@@ -37,3 +38,9 @@ def update_monitoring_states():
                     State.objects.update_or_create(**state_kwargs)
                 else:
                     State.objects.delete(**state_kwargs)
+                    already_removed.add(obj.host)
+
+            # Delete remaining removed hosts
+            to_remove = removed_hosts.difference(already_removed)
+            State.objects.delete(source_type=source_content_type,
+                    source_id=source.pk, host__in=to_remove)
