@@ -68,8 +68,8 @@ class MonitoringBackend(object):
     def get_monitoring_sources(self, active=None):
         '''
         Return a queryset containing
-        :class:`japper.monitoring.plugins.models.MonitoringSource` objects for
-        this monitoring backend.
+        :class:`japper.monitoring.plugins.models.MonitoringSourceBase` objects
+        for this monitoring backend.
 
         The default is to return all objects. If active is given, only active
         or inactive objects are returned.
