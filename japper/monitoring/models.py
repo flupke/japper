@@ -23,13 +23,12 @@ class CheckResult(models.Model):
     name = models.CharField(max_length=255)
     host = models.CharField(max_length=255, null=True)
     status = EnumIntegerField(CheckStatus)
+    output = models.CharField(max_length=255, null=True)
     metrics = JSONField(null=True)
 
     @classmethod
     def from_dict(cls, source, data):
-        return cls(source=source, name=data['check_name'],
-                host=data['host_name'], status=data['status'],
-                metrics=data['metrics'])
+        return cls(source=source, **data)
 
     class Meta:
         index_together = ['source_type', 'source_id']

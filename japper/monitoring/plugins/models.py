@@ -11,6 +11,15 @@ class CheckStatus(Enum):
     passing = 1
     warning = 2
     critical = 3
+    unknown = 4
+
+    @classmethod
+    def from_string(cls, value):
+        for entry in cls:
+            if entry.name == value:
+                return entry
+        else:
+            raise ValueError('invalid enum value name: %s' % value)
 
 
 class MonitoringSourceMeta(abc.ABCMeta, ModelBase):
@@ -35,9 +44,10 @@ class MonitoringSourceBase(six.with_metaclass(MonitoringSourceMeta,
         This must return a list of dicts of the form::
 
             {
-                'host_name': 'foo.com',
-                'check_name': 'memory',
+                'host': 'foo.com',
+                'name': 'memory',
                 'status': CheckStatus.passing,
+                'output': 'OK - 75.0% used',
                 'metrics': {
                     'free': '2G',
                     'used': '6G',
