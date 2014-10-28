@@ -4,6 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from enum import Enum
 from jsonfield import JSONField
 from enumfields import EnumIntegerField
+
 from .plugins.models import CheckStatus
 
 
@@ -59,5 +60,4 @@ class State(models.Model):
     last_checked = models.DateTimeField(auto_now=True, auto_now_add=True)
 
     class Meta:
-        index_together = ['source_type', 'source_id']
-        unique_together = ['source_type', 'source_id', 'name']
+        unique_together = ['source_type', 'source_id', 'host', 'name']

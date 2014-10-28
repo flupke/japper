@@ -35,6 +35,18 @@ class MonitoringSource(MonitoringSourceBase):
             ret.append(check_dict)
         return ret
 
+    def get_removed_hosts(self):
+        if not self.dynamic_hosts:
+            return []
+        ret = []
+        checks = self.get_checks_state()
+        for check in checks:
+            if check['CheckId'] == 'serfHealth':
+                status = CheckStatus.from_string(check['Status'])
+                if status is CheckStatus.critical:
+                    ret.append(check['Node'])
+        return ret
+
     @models.permalink
     def get_absolute_url(self):
         return ('consul_update_monitoring_source', [self.pk])
