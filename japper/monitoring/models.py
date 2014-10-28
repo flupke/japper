@@ -20,9 +20,16 @@ class CheckResult(models.Model):
     source_id = models.PositiveIntegerField()
     source = GenericForeignKey('source_type', 'source_id')
 
+    name = models.CharField(max_length=255)
     host = models.CharField(max_length=255, null=True)
     status = EnumIntegerField(CheckStatus)
     metrics = JSONField(null=True)
+
+    @classmethod
+    def from_dict(cls, source, data):
+        return cls(source=source, name=data['check_name'],
+                host=data['host_name'], status=data['status'],
+                metrics=data['metrics'])
 
     class Meta:
         index_together = ['source_type', 'source_id']

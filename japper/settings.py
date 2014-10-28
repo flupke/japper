@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
 # Load environment
+import datetime
+
 import environ
 env = environ.Env(
     DEBUG=(bool, False),
@@ -89,4 +91,14 @@ STATIC_URL = '/static/'
 STATIC_ROOT = env('STATIC_ROOT')
 
 # Crispy forms settings
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+# Celery settings
+
+CELERYBEAT_SCHEDULE = {
+    'get_check_results': {
+        'task': 'japper.monitoring.tasks.get_check_results',
+        'schedule': datetime.timedelta(seconds=60),
+    },
+}
