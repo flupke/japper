@@ -35,13 +35,20 @@
         </div>
         <ul id="host_{{ forloop.counter }}_states" class="list-group collapse">
             {% for state in states %}
-            <li class="list-group-item
-                    {% if state.get_status_display == 'critical' %}
-                    text-danger
-                    {% elif state.get_status_display == 'warning' %}
-                    text-warning
-                    {% endif %}">
+            <li class="list-group-item">
                 {{ state.name }}
+
+                {% if state.get_status_display == 'critical' %}
+                <span class="label label-danger">
+                {% elif state.get_status_display == 'warning' %}
+                <span class="label label-warning">
+                {% elif state.get_status_display == 'passing' %}
+                <span class="label label-success">
+                {% else %}
+                <span class="label label-default">
+                {% endif %}
+                {{ state.get_status_display }}</span>
+
                 {{ state.output|default_if_none:'' }}
             </li>
             {% endfor %}

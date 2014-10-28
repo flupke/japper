@@ -33,6 +33,7 @@ def update_monitoring_states():
                     status = StateStatus.from_check_status(check_obj.status)
                     state_kwargs['defaults'] = {
                         'status': status,
+                        'output': check_obj.output,
                         'metrics': check_obj.metrics,
                     }
                     State.objects.update_or_create(**state_kwargs)
