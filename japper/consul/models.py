@@ -26,7 +26,7 @@ class MonitoringSource(MonitoringSourceBase):
             output, metrics = parse_nagios_output(check['Output'])
             status = CheckStatus.from_string(check['Status'])
             check_dict = {
-                'name': check['CheckId'],
+                'name': check['CheckID'],
                 'host': check['Node'],
                 'status': status,
                 'output': output,
@@ -41,7 +41,7 @@ class MonitoringSource(MonitoringSourceBase):
         ret = []
         checks = self.get_checks_state()
         for check in checks:
-            if check['CheckId'] == 'serfHealth':
+            if check['CheckID'] == 'serfHealth':
                 status = CheckStatus.from_string(check['Status'])
                 if status is CheckStatus.critical:
                     ret.append(check['Node'])

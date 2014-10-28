@@ -35,12 +35,25 @@ class CheckResult(models.Model):
         index_together = ['source_type', 'source_id']
 
 
-class Status(Enum):
+class StateStatus(Enum):
 
     passing = 1
     warning = 2
     critical = 3
-    flapping = 4
+    unknown = 4
+    flapping = 5
+
+    @classmethod
+    def from_check_status(cls, status):
+        if status == CheckStatus.passing:
+            return cls.passing
+        elif status == CheckStatus.warning:
+            return cls.warning
+        elif status == CheckStatus.critical:
+            return cls.critical
+        elif status == CheckStatus.warning:
+            return cls.warning
+        raise ValueError('invalid status: %s' % status)
 
 
 class State(models.Model):
@@ -54,7 +67,7 @@ class State(models.Model):
 
     name = models.CharField(max_length=255)
     host = models.CharField(max_length=255, db_index=True, null=True)
-    status = EnumIntegerField(Status, db_index=True)
+    status = EnumIntegerField(StateStatus, db_index=True)
     metrics = JSONField(null=True)
 
     last_checked = models.DateTimeField(auto_now=True, auto_now_add=True)

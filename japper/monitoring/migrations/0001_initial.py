@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('source_id', models.PositiveIntegerField()),
                 ('name', models.CharField(max_length=255)),
                 ('host', models.CharField(max_length=255, null=True, db_index=True)),
-                ('status', enumfields.fields.EnumIntegerField(db_index=True, max_length=10, enum=japper.monitoring.models.Status)),
+                ('status', enumfields.fields.EnumIntegerField(db_index=True, max_length=10, enum=japper.monitoring.models.StateStatus)),
                 ('metrics', jsonfield.fields.JSONField(null=True)),
                 ('last_checked', models.DateTimeField(auto_now=True, auto_now_add=True)),
                 ('source_type', models.ForeignKey(to='contenttypes.ContentType')),

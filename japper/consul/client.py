@@ -62,7 +62,7 @@ class Client(object):
             error_args = ', '.join(servers)
             logger.error(error_fmt, error_args)
             raise NoServerFound(error_fmt % error_args)
-        return response
+        return response.json()
 
 
 def parse_nagios_output(value):
