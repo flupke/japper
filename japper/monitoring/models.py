@@ -65,9 +65,10 @@ class State(models.Model):
     source_id = models.PositiveIntegerField()
     source = GenericForeignKey('source_type', 'source_id')
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, db_index=True)
     host = models.CharField(max_length=255, db_index=True, null=True)
     status = EnumIntegerField(StateStatus, db_index=True)
+    output = models.CharField(max_length=255, null=True)
     metrics = JSONField(null=True)
 
     last_checked = models.DateTimeField(auto_now=True, auto_now_add=True)

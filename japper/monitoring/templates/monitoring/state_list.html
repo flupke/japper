@@ -4,8 +4,50 @@
 <div class="container">
     <h1>States</h1>
 
-    {% for state in states %}
-    {{ state }}
+    <div class="panel-group">
+    {% for host, states, status_counter in states_by_host %}
+    <div class="panel
+            {% if status_counter.critical %}
+            panel-danger
+            {% elif status_counter.warning %}
+            panel-warning
+            {% elif status_counter.unknown %}
+            panel-default
+            {% else %}
+            panel-success
+            {% endif %}">
+        <div class="panel-heading cursor-pointer" data-toggle="collapse" data-target="#host_{{ forloop.counter }}_states">
+            {{ host }}
+            <div class="pull-right">
+                {% if status_counter.unknown %}
+                <span class="label label-default">{{ status_counter.unknown }}</span>
+                {% endif %}
+                {% if status_counter.critical %}
+                <span class="label label-danger">{{ status_counter.critical }}</span>
+                {% endif %}
+                {% if status_counter.warning %}
+                <span class="label label-warning">{{ status_counter.warning }}</span>
+                {% endif %}
+                {% if status_counter.passing %}
+                <span class="label label-success">{{ status_counter.passing }}</span>
+                {% endif %}
+            </div>
+        </div>
+        <ul id="host_{{ forloop.counter }}_states" class="list-group collapse">
+            {% for state in states %}
+            <li class="list-group-item
+                    {% if state.get_status_display == 'critical' %}
+                    text-danger
+                    {% elif state.get_status_display == 'warning' %}
+                    text-warning
+                    {% endif %}">
+                {{ state.name }}
+                {{ state.output|default_if_none:'' }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
     {% endfor %}
+    </div>
 </div>
 {% endblock %}
