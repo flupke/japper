@@ -24,10 +24,11 @@ class MonitoringSource(MonitoringSourceBase):
         ret = []
         for check in checks:
             output, metrics = parse_nagios_output(check['Output'])
+            status = CheckStatus.from_string(check['Status'])
             check_dict = {
                 'name': check['CheckId'],
                 'host': check['Node'],
-                'status': CheckStatus.from_string(check['Status']),
+                'status': status,
                 'output': output,
                 'metrics': metrics,
             }
