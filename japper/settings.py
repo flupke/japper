@@ -97,7 +97,7 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # Celery settings
 
 CELERYBEAT_SCHEDULE = {
-    'get_check_results': {
+    'update_monitoring_states': {
         'task': 'japper.monitoring.tasks.update_monitoring_states',
         'schedule': datetime.timedelta(seconds=60),
     },
