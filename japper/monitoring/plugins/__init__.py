@@ -14,6 +14,16 @@ def iter_monitoring_backends():
         yield func()
 
 
+def iter_alert_backends():
+    '''
+    Iterate over registered alert backends objects.
+    '''
+    for entry_point in pkg_resources.iter_entry_points(
+            'japper.alert_backends'):
+        func = entry_point.load()
+        yield func()
+
+
 def get_installed_apps(base_apps):
     '''
     Build the INSTALLED_APPS setting, extending *base_apps* with registered
@@ -21,7 +31,10 @@ def get_installed_apps(base_apps):
     '''
     monitoring_backends_apps = (b.get_app_name()
             for b in iter_monitoring_backends())
-    return tuple(itertools.chain(base_apps, monitoring_backends_apps))
+    alert_backends_apps = (b.get_app_name()
+            for b in iter_alert_backends())
+    return tuple(itertools.chain(base_apps, monitoring_backends_apps,
+            alert_backends_apps))
 
 
 def get_url_patterns(prefix, *base_urls):

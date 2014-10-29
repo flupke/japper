@@ -6,15 +6,15 @@ import six
 from django.db.models.loading import get_model
 
 from ..exceptions import ImproperlyConfigured
+from .backend import Backend
 
 
-class MonitoringBackend(object):
+class MonitoringBackend(Backend):
     '''
     Base class for monitoring backends plugins.
     '''
 
     name = None
-    app_name = None
     urls_module = None
     create_source_view = None
     monitoring_source_model = None
@@ -27,21 +27,6 @@ class MonitoringBackend(object):
             raise ImproperlyConfigured('subclasses of MonitoringBackend '
                     'must define the name property or reimplement get_name()')
         return self.name
-
-    def _guess_package(self):
-        return self.__class__.__module__.rpartition('.')[0]
-
-    def get_app_name(self):
-        '''
-        Return the registered app name for this backend, i.e. what goes into
-        INSTALLED_APPS.
-
-        The default is the name of the package in which the backend is defined.
-        Define :attr:`app_name` to override.
-        '''
-        if self.app_name is not None:
-            return self.app_name
-        return self._guess_package()
 
     def get_urls_module(self):
         '''
@@ -71,7 +56,7 @@ class MonitoringBackend(object):
         :class:`japper.monitoring.plugins.models.MonitoringSourceBase` objects
         for this monitoring backend.
 
-        The default is to return all objects. If active is given, only active
+        The default is to return all objects. If *active* is given, only active
         or inactive objects are returned.
         '''
         if self.monitoring_source_model is None:
