@@ -3,12 +3,13 @@ from celery import shared_task
 
 from .models import CheckResult, State, StateStatus
 from .plugins import iter_monitoring_backends
+from . import settings
 
 
 @shared_task
-def update_monitoring_states():
+def fetch_check_results():
     '''
-    Cron job updating monitoring states from the output of monitoring backends.
+    Cron job fetching check results from monitoring backends.
     '''
     for backend in iter_monitoring_backends():
         for source in backend.get_monitoring_sources(active=True):
@@ -19,25 +20,54 @@ def update_monitoring_states():
             check_results = source.get_check_results()
             removed_hosts = set(source.get_removed_hosts())
 
-            # Create CheckResult objects and update or delete states
+            # Create CheckResult objects (only for new checks and hosts)
             for result in check_results:
                 check_obj = CheckResult.from_dict(source, result)
                 check_obj.save()
-                state_kwargs = {
-                    'source_type': source_content_type,
-                    'source_id': source.pk,
-                    'name': check_obj.name,
-                    'host': check_obj.host,
-                }
                 if check_obj.host not in removed_hosts:
                     status = StateStatus.from_check_status(check_obj.status)
-                    state_kwargs['defaults'] = {
-                        'status': status,
-                        'output': check_obj.output,
-                        'metrics': check_obj.metrics,
-                    }
-                    State.objects.update_or_create(**state_kwargs)
+                    State.objects.get_or_create(
+                        source_type=source_content_type,
+                        source_id=source.pk,
+                        name=check_obj.name,
+                        host=check_obj.host,
+                        defaults={
+                            'status': status,
+                            'output': check_obj.output,
+                            'metrics': check_obj.metrics,
+                        }
+                    )
 
-            # Delete remaining removed hosts
+            # Delete removed hosts
             State.objects.filter(source_type=source_content_type,
                     source_id=source.pk, host__in=removed_hosts).delete()
+
+            # Analyze check results time series and update remaining states
+            for state in state.objects.filter(source_type=source_content_type,
+                    source_id=source.pk):
+                update_monitoring_state.delay(state.pk)
+
+
+@shared_task
+def update_monitoring_state(pk):
+    '''
+    Subtask called from :func:`fetch_check_results`, looks back at check
+    results history for a state and updates it accordingly.
+    '''
+    try:
+        state = State.objects.get(pk=pk)
+    except State.DoesNotExist:
+        return
+
+    # Retrieve last check results
+    results = CheckResult.objects\
+        .filter(
+            source_type=state.source_type,
+            source_id=state.source_id,
+            host=state.host,
+            name=state.name)\
+        .order_by('-timestamp')[:settings.MIN_CONSECUTIVE_STATUS]
+
+    # Is there enough check results to take a decision?
+    if results.count() < settings.MIN_CONSECUTIVE_STATUS:
+        return
