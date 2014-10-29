@@ -1,10 +1,4 @@
-from django.core.mail import send_mail
-from django.template import Context
-from django.template.loader import get_template
-
 from japper.monitoring.plugins.alert_backend import AlertBackend
-from japper.monitoring.models import StateStatus
-from . import settings
 
 
 class DjangoEmailBackend(AlertBackend):
@@ -13,6 +7,13 @@ class DjangoEmailBackend(AlertBackend):
     '''
 
     def send_alert(self, user, prev_state, new_state):
+        from django.core.mail import send_mail
+        from django.template import Context
+        from django.template.loader import get_template
+
+        from japper.monitoring.models import StateStatus
+        from . import settings
+
         context = Context({
             'prev_state': new_state,
             'new_state': new_state,
