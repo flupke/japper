@@ -19,9 +19,15 @@ class StatesList(ListView):
     model = State
     paginate_by = 100
     context_object_name = 'states'
+    problems_only = False
 
     def get_queryset(self):
         qs = super(StatesList, self).get_queryset()
+        if self.problems_only:
+            qs = qs.filter(status__in=[
+                StateStatus.warning,
+                StateStatus.critical,
+            ])
         return qs.order_by('host', 'name')
 
     def get_context_data(self, **kwargs):
