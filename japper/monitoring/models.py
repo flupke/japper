@@ -75,7 +75,7 @@ class State(models.Model):
     output = models.CharField(max_length=255, null=True)
     metrics = JSONField(null=True)
 
-    last_checked = models.DateTimeField(auto_now=True, auto_now_add=True)
+    last_checked = models.DateTimeField()
 
     class Meta:
         unique_together = ['source_type', 'source_id', 'host', 'name']

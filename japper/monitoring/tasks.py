@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.contrib.contenttypes.models import ContentType
 from celery import shared_task
 
@@ -35,6 +37,7 @@ def fetch_check_results():
                             'status': status,
                             'output': check_obj.output,
                             'metrics': check_obj.metrics,
+                            'last_checked': check_obj.timestamp,
                         }
                     )
 
@@ -45,11 +48,11 @@ def fetch_check_results():
             # Analyze check results time series and update remaining states
             for state in State.objects.filter(source_type=source_content_type,
                     source_id=source.pk):
-                update_monitoring_state.delay(state.pk)
+                update_monitoring_states.delay(state.pk)
 
 
 @shared_task
-def update_monitoring_state(state_pk):
+def update_monitoring_states(state_pk):
     '''
     Subtask called from :func:`fetch_check_results`, looks back at check
     results history for a state and updates it accordingly.
@@ -71,12 +74,30 @@ def update_monitoring_state(state_pk):
     # Is there enough check results to take a decision?
     if results.count() < settings.MIN_CONSECUTIVE_STATUSES:
         return
+    last_check_result = results[0]
 
-    # If all previous statuses are equal and different than the current state
-    # status, update state
+    # If all previous check statuses are equal and different than the current
+    # state status, update state
     statuses = [r.status for r in results]
     if statuses.count(statuses[0]) == len(statuses):
         state_status = StateStatus.from_check_status(statuses[0])
         if state.status != state_status:
             state.status = state_status
-            state.save(update_fields=['status'])
+            state.ouptut = last_check_result.output
+            state.metrics = last_check_result.metrics
+
+    # Always update last_checked timestamp
+    state.last_checked = last_check_result.timestamp
+    state.save()
+
+
+@shared_task
+def cleanup():
+    '''
+    Cron job to remove expired check results and states.
+    '''
+    now = timezone.now()
+    CheckResult.objects.filter(
+            timestamp__lt=now - settings.CHECK_RESULTS_TTL).delete()
+    State.objects.filter(
+            last_checked__lt=now - settings.STATES_TTL).delete()

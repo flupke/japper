@@ -8,16 +8,18 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-# Load environment
 import datetime
 
 import environ
+
+from japper.monitoring.plugins import get_installed_apps
+
+
+# Load environment
 env = environ.Env(
     DEBUG=(bool, False),
     STATIC_ROOT=(str, None),
 )
-
-from japper.monitoring.plugins import get_installed_apps
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -97,8 +99,12 @@ CRISPY_TEMPLATE_PACK = 'bootstrap3'
 # Celery settings
 
 CELERYBEAT_SCHEDULE = {
-    'fetch_check_results': {
+    'monitoring:fetch_check_results': {
         'task': 'japper.monitoring.tasks.fetch_check_results',
-        'schedule': datetime.timedelta(seconds=60),
+        'schedule': datetime.timedelta(minutes=1),
+    },
+    'monitoring:cleanup': {
+        'task': 'japper.monitoring.tasks.cleanup',
+        'schedule': datetime.timedelta(minutes=30),
     },
 }
