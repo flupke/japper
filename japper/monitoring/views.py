@@ -1,4 +1,3 @@
-from collections import Counter
 
 from vanilla import TemplateView, ListView
 
@@ -26,26 +25,7 @@ class StatesList(ListView):
         return qs.order_by('host', 'name')
 
     def get_context_data(self, **kwargs):
-
-        def host_group_data(host, states):
-            status_counter = Counter()
-            for state in states:
-                status_counter[state.status.name] += 1
-            return (host, states, status_counter)
-
-        # Group states by host
-        prev_host = no_host = object()
-        host_states = []
-        states_by_host = []
-        for state in self.get_queryset():
-            if prev_host != no_host and state.host != prev_host:
-                states_by_host.append(host_group_data(prev_host, host_states))
-                host_states = []
-            host_states.append(state)
-            prev_host = state.host
-        if host_states:
-            states_by_host.append(host_group_data(prev_host, host_states))
-
+        states_by_host = State.group_by_host(self.get_queryset())
         return super(StatesList, self).get_context_data(
                 states_by_host=states_by_host, StateStatus=StateStatus,
                 **kwargs)
