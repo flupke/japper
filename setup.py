@@ -30,6 +30,7 @@ install_requires = [
     'django-environ==0.3.0',
     'jsonfield==1.0.0',
     'celery==3.1.16',
+    'django-simple-menu==1.0.9',
 ]
 
 postgres_requires = [

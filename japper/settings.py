@@ -45,6 +45,7 @@ INSTALLED_APPS = get_installed_apps((
     'django.contrib.staticfiles',
 
     'crispy_forms',
+    'menu',
 
     'japper',
     'japper.monitoring',
@@ -64,6 +65,16 @@ ROOT_URLCONF = 'japper.urls'
 
 WSGI_APPLICATION = 'japper.wsgi.application'
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.request',
+)
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
