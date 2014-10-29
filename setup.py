@@ -80,6 +80,9 @@ setup(
         'japper.monitoring_backends': [
             'consul = japper.consul.plugin:create_backend',
         ],
+        'japper.alert_backends': [
+            'django_email = japper.alert.django_email.plugin:create_backend',
+        ],
     },
     classifiers=[
         'Framework :: Django',

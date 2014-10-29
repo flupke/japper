@@ -1,0 +1,14 @@
+{{ new_state.source }}{% if new_state.host %}/{{ new_state.host }}{% endif %}/{{ new_state.name }} is {{ new_state.status.name|upper }}
+
+State changed from {{ prev_state.status.name|upper }} to {{ new_state.status.name|upper }}
+
+Source: {{ new_state.source }}
+Host: {{ new_state.host|default_if_none:'' }}
+Name: {{ new_state.name }}
+Status: {{ new_state.status.name|upper }}
+
+{{ new_state.output }}
+
+{% if new_state.metrics %}Metrics:{% for name, value in metrics.items %}
+    {{ name }}: {{ value }}{% endfor %}
+{% endif %}
