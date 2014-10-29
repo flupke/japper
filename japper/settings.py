@@ -112,3 +112,9 @@ CELERYBEAT_SCHEDULE = {
 # Email settings
 
 globals().update(env.email_url())
+
+# Auth settings
+
+LOGIN_REDIRECT_URL = 'monitoring_problems'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
