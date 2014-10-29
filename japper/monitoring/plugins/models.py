@@ -13,6 +13,8 @@ class CheckStatus(Enum):
     critical = 3
     unknown = 4
 
+    def do_not_call_in_templates(): pass
+
     @classmethod
     def from_string(cls, value):
         for entry in cls:

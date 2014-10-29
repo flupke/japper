@@ -43,6 +43,8 @@ class StateStatus(Enum):
     unknown = 4
     flapping = 5
 
+    def do_not_call_in_templates(): pass
+
     @classmethod
     def from_check_status(cls, status):
         if status == CheckStatus.passing:
@@ -51,8 +53,8 @@ class StateStatus(Enum):
             return cls.warning
         elif status == CheckStatus.critical:
             return cls.critical
-        elif status == CheckStatus.warning:
-            return cls.warning
+        elif status == CheckStatus.unknown:
+            return cls.unknown
         raise ValueError('invalid status: %s' % status)
 
 

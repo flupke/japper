@@ -3,7 +3,7 @@ from collections import Counter
 from vanilla import TemplateView, ListView
 
 from .plugins import iter_monitoring_backends
-from .models import State
+from .models import State, StateStatus
 
 
 class MonitoringSourcesList(TemplateView):
@@ -47,5 +47,6 @@ class StatesList(ListView):
             states_by_host.append(host_group_data(prev_host, host_states))
 
         return super(StatesList, self).get_context_data(
-                states_by_host=states_by_host, **kwargs)
+                states_by_host=states_by_host, StateStatus=StateStatus,
+                **kwargs)
 
