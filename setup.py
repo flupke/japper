@@ -78,10 +78,10 @@ setup(
     include_package_data=True,
     entry_points={
         'japper.monitoring_backends': [
-            'consul = japper.consul.plugin:create_backend',
+            'consul = japper.monitoring_backends.consul.plugin:create_backend',
         ],
         'japper.alert_backends': [
-            'django_email = japper.alert.django_email.plugin:create_backend',
+            'django_email = japper.alert_backends.django_email.plugin:create_backend',
         ],
     },
     classifiers=[
