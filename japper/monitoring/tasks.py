@@ -85,6 +85,7 @@ def update_monitoring_states(state_pk):
             state.status = state_status
             state.ouptut = last_check_result.output
             state.metrics = last_check_result.metrics
+            state.last_status_change = last_check_result.timestamp
 
     # Always update last_checked timestamp
     state.last_checked = last_check_result.timestamp
