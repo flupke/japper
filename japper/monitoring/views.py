@@ -36,6 +36,8 @@ class StatesList(ListView):
         page = self.paginate_queryset(queryset, paginate_by)
         states_by_host = State.group_by_host(page.object_list)
         return super(StatesList, self).get_context_data(
-                states_by_host=states_by_host, StateStatus=StateStatus,
+                states_by_host=states_by_host,
+                StateStatus=StateStatus,
+                problems_only=self.problems_only,
                 **kwargs)
 

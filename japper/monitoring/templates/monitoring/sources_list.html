@@ -12,7 +12,7 @@
         <li><a href="{{ source.get_absolute_url }}">{{ source }}</a></li>
         {% endfor %}
     </ul>
-    <a href="{% url backend.get_create_source_view %}" class="btn btn-primary">Create source</a>
+    <a href="{% url backend.get_create_source_view %}" class="btn btn-primary">Add {{ backend.name }} source</a>
     {% endfor %}
 
 </div>

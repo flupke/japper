@@ -2,7 +2,13 @@
 
 {% block content %}
 <div class="container">
-    <h1>States</h1>
+    <h1>
+        {% if problems_only %}
+        Problems
+        {% else %}
+        States
+        {% endif %}
+    </h1>
 
     <div class="panel-group">
         {% for host, states, status_counter in states_by_host %}
