@@ -25,7 +25,10 @@ class StatesList(ListView):
         return qs.order_by('host', 'name')
 
     def get_context_data(self, **kwargs):
-        states_by_host = State.group_by_host(self.get_queryset())
+        queryset = self.get_queryset()
+        paginate_by = self.get_paginate_by()
+        page = self.paginate_queryset(queryset, paginate_by)
+        states_by_host = State.group_by_host(page.object_list)
         return super(StatesList, self).get_context_data(
                 states_by_host=states_by_host, StateStatus=StateStatus,
                 **kwargs)

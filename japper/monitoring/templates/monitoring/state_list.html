@@ -5,56 +5,62 @@
     <h1>States</h1>
 
     <div class="panel-group">
-    {% for host, states, status_counter in states_by_host %}
-    <div class="panel
-            {% if status_counter.critical %}
-            panel-danger
-            {% elif status_counter.warning %}
-            panel-warning
-            {% elif status_counter.unknown %}
-            panel-default
-            {% else %}
-            panel-success
-            {% endif %}">
-        <div class="panel-heading cursor-pointer" data-toggle="collapse" data-target="#host_{{ forloop.counter }}_states">
-            {{ host }}
-            <div class="pull-right">
-                {% if status_counter.unknown %}
-                <span class="label label-default">{{ status_counter.unknown }}</span>
-                {% endif %}
+        {% for host, states, status_counter in states_by_host %}
+        <div class="panel
                 {% if status_counter.critical %}
-                <span class="label label-danger">{{ status_counter.critical }}</span>
-                {% endif %}
-                {% if status_counter.warning %}
-                <span class="label label-warning">{{ status_counter.warning }}</span>
-                {% endif %}
-                {% if status_counter.passing %}
-                <span class="label label-success">{{ status_counter.passing }}</span>
-                {% endif %}
-            </div>
-        </div>
-        <ul id="host_{{ forloop.counter }}_states" class="list-group collapse">
-            {% for state in states %}
-            <li class="list-group-item">
-                {{ state.name }}
-
-                {% if state.status == StateStatus.critical %}
-                <span class="label label-danger">
-                {% elif state.status == StateStatus.warning %}
-                <span class="label label-warning">
-                {% elif state.status == StateStatus.passing %}
-                <span class="label label-success">
+                panel-danger
+                {% elif status_counter.warning %}
+                panel-warning
+                {% elif status_counter.unknown %}
+                panel-default
                 {% else %}
-                <span class="label label-default">
-                {% endif %}
-                {{ state.get_status_display }}</span>
+                panel-success
+                {% endif %}">
+            <div class="panel-heading cursor-pointer" data-toggle="collapse" data-target="#host_{{ forloop.counter }}_states">
+                {{ host }}
+                <div class="pull-right">
+                    {% if status_counter.unknown %}
+                    <span class="label label-default">{{ status_counter.unknown }}</span>
+                    {% endif %}
+                    {% if status_counter.critical %}
+                    <span class="label label-danger">{{ status_counter.critical }}</span>
+                    {% endif %}
+                    {% if status_counter.warning %}
+                    <span class="label label-warning">{{ status_counter.warning }}</span>
+                    {% endif %}
+                    {% if status_counter.passing %}
+                    <span class="label label-success">{{ status_counter.passing }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <ul id="host_{{ forloop.counter }}_states" class="list-group collapse">
+                {% for state in states %}
+                <li class="list-group-item">
+                    {{ state.name }}
 
-                {{ state.output|default_if_none:'' }}
-            </li>
-            {% endfor %}
-        </ul>
+                    {% if state.status == StateStatus.critical %}
+                    <span class="label label-danger">
+                    {% elif state.status == StateStatus.warning %}
+                    <span class="label label-warning">
+                    {% elif state.status == StateStatus.passing %}
+                    <span class="label label-success">
+                    {% else %}
+                    <span class="label label-default">
+                    {% endif %}
+                    {{ state.get_status_display }}</span>
+
+                    {{ state.output|default_if_none:'' }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
     </div>
-    {% endfor %}
-    </div>
+
+    <ul class="pagination">
+        {% for page in paginator.page_range %}
+        <li{% if page_obj.number == page %} class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+    </ul>
 </div>
 {% endblock %}
