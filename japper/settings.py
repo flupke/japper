@@ -108,3 +108,7 @@ CELERYBEAT_SCHEDULE = {
         'schedule': datetime.timedelta(minutes=30),
     },
 }
+
+# Email settings
+
+globals().update(env.email_url())
