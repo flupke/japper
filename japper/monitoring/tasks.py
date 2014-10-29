@@ -43,19 +43,19 @@ def fetch_check_results():
                     source_id=source.pk, host__in=removed_hosts).delete()
 
             # Analyze check results time series and update remaining states
-            for state in state.objects.filter(source_type=source_content_type,
+            for state in State.objects.filter(source_type=source_content_type,
                     source_id=source.pk):
                 update_monitoring_state.delay(state.pk)
 
 
 @shared_task
-def update_monitoring_state(pk):
+def update_monitoring_state(state_pk):
     '''
     Subtask called from :func:`fetch_check_results`, looks back at check
     results history for a state and updates it accordingly.
     '''
     try:
-        state = State.objects.get(pk=pk)
+        state = State.objects.get(pk=state_pk)
     except State.DoesNotExist:
         return
 
@@ -66,8 +66,17 @@ def update_monitoring_state(pk):
             source_id=state.source_id,
             host=state.host,
             name=state.name)\
-        .order_by('-timestamp')[:settings.MIN_CONSECUTIVE_STATUS]
+        .order_by('-timestamp')[:settings.MIN_CONSECUTIVE_STATUSES]
 
     # Is there enough check results to take a decision?
-    if results.count() < settings.MIN_CONSECUTIVE_STATUS:
+    if results.count() < settings.MIN_CONSECUTIVE_STATUSES:
         return
+
+    # If all previous statuses are equal and different than the current state
+    # status, update state
+    statuses = [r.status for r in results]
+    if statuses.count(statuses[0]) == len(statuses):
+        state_status = StateStatus.from_check_status(statuses[0])
+        if state.status != state_status:
+            state.status = state_status
+            state.save(update_fields=['status'])
