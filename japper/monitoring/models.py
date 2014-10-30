@@ -60,15 +60,22 @@ class State(models.Model):
     @classmethod
     def group_by_host(cls, states):
         '''
-        Build a list of (host, states, status_counter) tuples out of the
-        *states* iterable.
+        Build a list of (host, states, status_counter, oldest_problem_date)
+        tuples out of the *states* iterable.
         '''
 
         def host_group_data(host, states):
             status_counter = Counter()
+            oldest_problem_date = None
             for state in states:
                 status_counter[state.status.name] += 1
-            return (host, states, status_counter)
+                if state.status.is_problem():
+                    if oldest_problem_date is None:
+                        oldest_problem_date = state.last_status_change
+                    else:
+                        oldest_problem_date = min(oldest_problem_date,
+                                state.last_status_change)
+            return (host, states, status_counter, oldest_problem_date)
 
         prev_host = no_host = object()
         host_states = []

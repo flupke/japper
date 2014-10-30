@@ -11,7 +11,7 @@
     </h1>
 
     <div class="panel-group">
-        {% for host, states, status_counter in states_by_host %}
+        {% for host, states, status_counter, oldest_problem_date in states_by_host %}
         <div class="panel
                 {% if status_counter.critical %}
                 panel-danger
@@ -24,6 +24,9 @@
                 {% endif %}">
             <div class="panel-heading cursor-pointer" data-toggle="collapse" data-target="#host_{{ forloop.counter }}_states">
                 {{ host }}
+                {% if oldest_problem_date %}
+                {{ oldest_problem_date|timesince }}
+                {% endif %}
                 <div class="pull-right">
                     {% if status_counter.unknown %}
                     <span class="label label-default">{{ status_counter.unknown }}</span>
