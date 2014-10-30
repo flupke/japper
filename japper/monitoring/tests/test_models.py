@@ -20,6 +20,7 @@ def test_state_group_by_host():
         State(host='host3', name='wizz', status=Status.passing,
             last_status_change=now - one_day * 2),
     ]
+
     assert State.group_by_host(states) == [
         ('host1', [states[0], states[1]], Counter(passing=2), None),
         ('host2', [states[2]], Counter(critical=1), None),

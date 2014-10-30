@@ -49,6 +49,7 @@ INSTALLED_APPS = get_installed_apps((
 
     'japper',
     'japper.monitoring',
+    'japper.users',
 ))
 
 MIDDLEWARE_CLASSES = (

@@ -14,4 +14,5 @@ urlpatterns = get_url_patterns('',
     url(r'^monitoring/', include('japper.monitoring.urls')),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout_then_login, name='logout'),
+    url(r'^users/', include('japper.users.urls')),
 )

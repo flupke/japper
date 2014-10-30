@@ -31,6 +31,12 @@ Menu.add_item('auth', MenuItem(
 ))
 
 Menu.add_item('auth', MenuItem(
+    'Profile',
+    reverse('users_profile'),
+    check=lambda request: request.user.is_authenticated()
+))
+
+Menu.add_item('auth', MenuItem(
     'Logout',
     reverse('logout'),
     check=lambda request: request.user.is_authenticated()
