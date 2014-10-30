@@ -122,7 +122,7 @@ CELERYBEAT_SCHEDULE = {
 
 # Email settings
 
-globals().update(env.email_url())
+globals().update(env.email_url(default='smtp://localhost'))
 
 # Auth settings
 
