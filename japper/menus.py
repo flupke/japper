@@ -22,6 +22,12 @@ Menu.add_item('main', MenuItem(
     check=lambda request: request.user.is_authenticated()
 ))
 
+Menu.add_item('main', MenuItem(
+    'Alert sinks',
+    reverse('monitoring_alert_sinks'),
+    check=lambda request: request.user.is_authenticated()
+))
+
 # Auth menu
 
 Menu.add_item('auth', MenuItem(

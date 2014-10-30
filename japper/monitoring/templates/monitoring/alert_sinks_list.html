@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <h1>Alert sinks</h1>
+
+    {% for backend in backends %}
+    <h2>{{ backend.get_name|title }}</h2>
+    <ul>
+        {% for sink in backend.get_instances %}
+        <li><a href="{{ sink.get_absolute_url }}">{{ sink }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{% url backend.get_create_instance_view %}" class="btn btn-primary">Add {{ backend.name }} sink</a>
+    {% endfor %}
+
+</div>
+{% endblock %}

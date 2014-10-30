@@ -5,19 +5,27 @@ from django.db import models
 from django.db.models.base import ModelBase
 
 
-class MonitoringSourceMeta(abc.ABCMeta, ModelBase):
+class ABCModelMeta(abc.ABCMeta, ModelBase):
 
     pass
 
 
-class MonitoringSourceBase(six.with_metaclass(MonitoringSourceMeta,
-        models.Model)):
-    '''
-    Base model for monitoring sources.
-    '''
+class BackendInstanceBase(six.with_metaclass(ABCModelMeta, models.Model)):
 
     name = models.CharField(max_length=255, unique=True)
     active = models.BooleanField(default=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        abstract = True
+
+
+class MonitoringSourceBase(BackendInstanceBase):
+    '''
+    Base model for monitoring sources.
+    '''
 
     @abc.abstractmethod
     def get_check_results(self):
@@ -51,8 +59,25 @@ class MonitoringSourceBase(six.with_metaclass(MonitoringSourceMeta,
         '''
         return []
 
-    def __unicode__(self):
-        return self.name
+    class Meta:
+        abstract = True
+
+
+class AlertSinkBase(BackendInstanceBase):
+    '''
+    Base model for alert sinks.
+    '''
+
+    @abc.abstractmethod
+    def send_alert(self, prev_state, new_state, user=None):
+        '''
+        Format and send an alert when a :class:`japper.monitoring.models.State`
+        changes from *prev_state* to *new_state*.
+
+        *user* may or may not be given depending on the scope of the sink
+        (per-user or global), it is the responsibility of the implementation to
+        send a message or not depending on its presence.
+        '''
 
     class Meta:
         abstract = True

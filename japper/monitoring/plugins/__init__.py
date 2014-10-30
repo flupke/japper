@@ -47,5 +47,9 @@ def get_url_patterns(prefix, *base_urls):
     monitoring_backends_urls = (
             url(r'^%s/' % b.get_name(), include(b.get_urls_module()))
             for b in iter_monitoring_backends())
+    alert_backends_urls = (
+            url(r'^%s/' % b.get_name(), include(b.get_urls_module()))
+            for b in iter_alert_backends())
     return patterns(prefix,
-            *itertools.chain(base_urls, monitoring_backends_urls))
+            *itertools.chain(base_urls, monitoring_backends_urls,
+                alert_backends_urls))

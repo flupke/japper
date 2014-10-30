@@ -1,11 +1,11 @@
-from japper.monitoring.plugins.monitoring_backend import MonitoringBackend
+from japper.monitoring.plugins.backend import MonitoringBackend
 
 
 class ConsulBackend(MonitoringBackend):
 
     name = 'consul'
-    monitoring_source_model = 'consul.MonitoringSource'
-    create_source_view = 'consul_create_monitoring_source'
+    model = 'consul.MonitoringSource'
+    create_instance_view = 'consul_create_monitoring_source'
 
 
 def create_backend():

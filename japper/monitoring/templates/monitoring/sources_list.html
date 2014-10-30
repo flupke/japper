@@ -8,11 +8,11 @@
     {% for backend in backends %}
     <h2>{{ backend.get_name|title }}</h2>
     <ul>
-        {% for source in backend.get_monitoring_sources %}
+        {% for source in backend.get_instances %}
         <li><a href="{{ source.get_absolute_url }}">{{ source }}</a></li>
         {% endfor %}
     </ul>
-    <a href="{% url backend.get_create_source_view %}" class="btn btn-primary">Add {{ backend.name }} source</a>
+    <a href="{% url backend.get_create_instance_view %}" class="btn btn-primary">Add {{ backend.name }} source</a>
     {% endfor %}
 
 </div>
