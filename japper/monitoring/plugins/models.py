@@ -1,27 +1,8 @@
 import abc
 
 import six
-from enum import Enum
 from django.db import models
 from django.db.models.base import ModelBase
-
-
-class CheckStatus(Enum):
-
-    passing = 1
-    warning = 2
-    critical = 3
-    unknown = 4
-
-    def do_not_call_in_templates(): pass
-
-    @classmethod
-    def from_string(cls, value):
-        for entry in cls:
-            if entry.name == value:
-                return entry
-        else:
-            raise ValueError('invalid enum value name: %s' % value)
 
 
 class MonitoringSourceMeta(abc.ABCMeta, ModelBase):
@@ -48,7 +29,7 @@ class MonitoringSourceBase(six.with_metaclass(MonitoringSourceMeta,
             {
                 'host': 'foo.com',
                 'name': 'memory',
-                'status': CheckStatus.passing,
+                'status': Status.passing,
                 'output': 'OK - 75.0% used',
                 'metrics': {
                     'free': '2G',

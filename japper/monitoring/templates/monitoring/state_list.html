@@ -44,11 +44,11 @@
                 <li class="list-group-item">
                     {{ state.name }}
 
-                    {% if state.status == StateStatus.critical %}
+                    {% if state.status == Status.critical %}
                     <span class="label label-danger">
-                    {% elif state.status == StateStatus.warning %}
+                    {% elif state.status == Status.warning %}
                     <span class="label label-warning">
-                    {% elif state.status == StateStatus.passing %}
+                    {% elif state.status == Status.passing %}
                     <span class="label label-success">
                     {% else %}
                     <span class="label label-default">

@@ -11,13 +11,13 @@ class DjangoEmailBackend(AlertBackend):
         from django.template import Context
         from django.template.loader import get_template
 
-        from japper.monitoring.models import StateStatus
+        from japper.monitoring.status import Status
         from . import settings
 
         context = Context({
             'prev_state': new_state,
             'new_state': new_state,
-            'StateStatus': StateStatus,
+            'Status': Status,
         })
         subject_template = get_template('alert/django_email/subject.txt')
         subject = subject_template.render(context)

@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import japper.monitoring.plugins.models
 import japper.monitoring.models
+import japper.monitoring.status
 import jsonfield.fields
 import enumfields.fields
 
@@ -22,8 +23,7 @@ class Migration(migrations.Migration):
                 ('timestamp', models.DateTimeField(auto_now_add=True, db_index=True)),
                 ('source_id', models.PositiveIntegerField()),
                 ('host', models.CharField(max_length=255, null=True)),
-                ('status', enumfields.fields.EnumIntegerField(max_length=10,
-                    enum=japper.monitoring.plugins.models.CheckStatus)),
+                ('status', enumfields.fields.EnumIntegerField(max_length=10, enum=japper.monitoring.status.Status)),
                 ('metrics', jsonfield.fields.JSONField(null=True)),
                 ('source_type', models.ForeignKey(to='contenttypes.ContentType')),
             ],
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('source_id', models.PositiveIntegerField()),
                 ('name', models.CharField(max_length=255)),
                 ('host', models.CharField(max_length=255, null=True, db_index=True)),
-                ('status', enumfields.fields.EnumIntegerField(db_index=True, max_length=10, enum=japper.monitoring.models.StateStatus)),
+                ('status', enumfields.fields.EnumIntegerField(db_index=True, max_length=10, enum=japper.monitoring.status.Status)),
                 ('metrics', jsonfield.fields.JSONField(null=True)),
                 ('last_checked', models.DateTimeField(auto_now=True, auto_now_add=True)),
                 ('source_type', models.ForeignKey(to='contenttypes.ContentType')),

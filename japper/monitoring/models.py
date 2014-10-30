@@ -3,11 +3,10 @@ from collections import Counter
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from enum import Enum
 from jsonfield import JSONField
 from enumfields import EnumIntegerField
 
-from .plugins.models import CheckStatus
+from .status import Status
 
 
 class CheckResult(models.Model):
@@ -25,7 +24,7 @@ class CheckResult(models.Model):
 
     name = models.CharField(max_length=255)
     host = models.CharField(max_length=255, null=True)
-    status = EnumIntegerField(CheckStatus)
+    status = EnumIntegerField(Status)
     output = models.CharField(max_length=255, null=True)
     metrics = JSONField(null=True)
 
@@ -35,29 +34,6 @@ class CheckResult(models.Model):
 
     class Meta:
         index_together = ['source_type', 'source_id']
-
-
-class StateStatus(Enum):
-
-    passing = 1
-    warning = 2
-    critical = 3
-    unknown = 4
-    flapping = 5
-
-    def do_not_call_in_templates(): pass
-
-    @classmethod
-    def from_check_status(cls, status):
-        if status == CheckStatus.passing:
-            return cls.passing
-        elif status == CheckStatus.warning:
-            return cls.warning
-        elif status == CheckStatus.critical:
-            return cls.critical
-        elif status == CheckStatus.unknown:
-            return cls.unknown
-        raise ValueError('invalid status: %s' % status)
 
 
 class State(models.Model):
@@ -71,7 +47,7 @@ class State(models.Model):
 
     name = models.CharField(max_length=255, db_index=True)
     host = models.CharField(max_length=255, db_index=True, null=True)
-    status = EnumIntegerField(StateStatus, db_index=True)
+    status = EnumIntegerField(Status, db_index=True)
     output = models.CharField(max_length=255, null=True)
     metrics = JSONField(null=True)
 

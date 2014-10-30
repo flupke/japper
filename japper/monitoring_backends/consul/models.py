@@ -1,7 +1,8 @@
 from django.db import models
 from django.utils.lru_cache import lru_cache
 
-from japper.monitoring.plugins.models import MonitoringSourceBase, CheckStatus
+from japper.monitoring.plugins.models import MonitoringSourceBase
+from japper.monitoring.status import Status
 from .client import Client, parse_nagios_output
 
 
@@ -24,7 +25,7 @@ class MonitoringSource(MonitoringSourceBase):
         ret = []
         for check in checks:
             output, metrics = parse_nagios_output(check['Output'])
-            status = CheckStatus.from_string(check['Status'])
+            status = Status.from_string(check['Status'])
             check_dict = {
                 'name': check['CheckID'],
                 'host': check['Node'],
@@ -42,8 +43,8 @@ class MonitoringSource(MonitoringSourceBase):
         checks = self.get_checks_state()
         for check in checks:
             if check['CheckID'] == 'serfHealth':
-                status = CheckStatus.from_string(check['Status'])
-                if status is CheckStatus.critical:
+                status = Status.from_string(check['Status'])
+                if status is Status.critical:
                     ret.append(check['Node'])
         return ret
 

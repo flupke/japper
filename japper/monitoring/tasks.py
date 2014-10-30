@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.contrib.contenttypes.models import ContentType
 from celery import shared_task
 
-from .models import CheckResult, State, StateStatus
+from .models import CheckResult, State
 from .plugins import iter_monitoring_backends
 from . import settings
 
@@ -27,14 +27,13 @@ def fetch_check_results():
                 check_obj = CheckResult.from_dict(source, result)
                 check_obj.save()
                 if check_obj.host not in removed_hosts:
-                    status = StateStatus.from_check_status(check_obj.status)
                     State.objects.get_or_create(
                         source_type=source_content_type,
                         source_id=source.pk,
                         name=check_obj.name,
                         host=check_obj.host,
                         defaults={
-                            'status': status,
+                            'status': check_obj.status,
                             'output': check_obj.output,
                             'metrics': check_obj.metrics,
                             'last_checked': check_obj.timestamp,
@@ -80,9 +79,8 @@ def update_monitoring_states(state_pk):
     # state status, update state
     statuses = [r.status for r in results]
     if statuses.count(statuses[0]) == len(statuses):
-        state_status = StateStatus.from_check_status(statuses[0])
-        if state.status != state_status:
-            state.status = state_status
+        if state.status != statuses[0]:
+            state.status = statuses[0]
             state.ouptut = last_check_result.output
             state.metrics = last_check_result.metrics
             state.last_status_change = last_check_result.timestamp

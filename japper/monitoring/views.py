@@ -2,7 +2,8 @@
 from vanilla import TemplateView, ListView
 
 from .plugins import iter_monitoring_backends
-from .models import State, StateStatus
+from .models import State
+from .status import Status
 
 
 class MonitoringSourcesList(TemplateView):
@@ -24,10 +25,7 @@ class StatesList(ListView):
     def get_queryset(self):
         qs = super(StatesList, self).get_queryset()
         if self.problems_only:
-            qs = qs.filter(status__in=[
-                StateStatus.warning,
-                StateStatus.critical,
-            ])
+            qs = qs.filter(status__in=Status.problems())
         return qs.order_by('host', 'name')
 
     def get_context_data(self, **kwargs):
@@ -37,7 +35,7 @@ class StatesList(ListView):
         states_by_host = State.group_by_host(page.object_list)
         return super(StatesList, self).get_context_data(
                 states_by_host=states_by_host,
-                StateStatus=StateStatus,
+                Status=Status,
                 problems_only=self.problems_only,
                 **kwargs)
 
