@@ -69,13 +69,8 @@ def update_monitoring_states(state_pk):
     prev_state = copy.deepcopy(state)
 
     # Retrieve last check results
-    results = CheckResult.objects\
-        .filter(
-            source_type=state.source_type,
-            source_id=state.source_id,
-            host=state.host,
-            name=state.name)\
-        .order_by('-timestamp')[:settings.MIN_CONSECUTIVE_STATUSES]
+    results = CheckResult.objects.get_state_log(state,
+            max_results=settings.MIN_CONSECUTIVE_STATUSES)
 
     # Is there enough check results to take a decision?
     if results.count() < settings.MIN_CONSECUTIVE_STATUSES:

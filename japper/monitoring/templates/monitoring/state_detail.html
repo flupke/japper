@@ -1,7 +1,13 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block extra_head %}
+<script src="{% static 'highstock.js' %}"></script>
+{% endblock %}
 
 {% block content %}
 <div class="container">
+    <h1>State detail</h1>
     <h3>{{ state.status.name|upper }}: {{ state.full_path }}</h3>
     <div id="state-heading" class="panel panel-default">
         <div class="panel-heading">
@@ -34,10 +40,47 @@
                         {% endif %}
                     </td>
                 </tr>
+                <tr>
+                    <td>Check output:</td>
+                    <td>{{ state.output }}</td>
+                </tr>
             </table>
         </div>
     </div>
 </div>
-</div>
+
+<div id="state-metrics" class="container"></div>
 {% endblock %}
 
+{% block page_scripts %}
+<script>
+$(function () {
+    $('#state-metrics').highcharts('StockChart', {
+        rangeSelector: {
+            selected: 4
+        },
+        title: {
+            text: 'Metrics'
+        },
+        xAxis: {
+            type: 'datetime',
+            title: {
+                text: 'Date'
+            }
+        },
+        series: [
+            {% for name, values in state.get_metrics_series.items %}
+            {
+                name: '{{ name }}',
+                data: [
+                    {% for timestamp, value in values %}
+                    [Date.parse('{{ timestamp.isoformat }}'), {{ value }}],
+                    {% endfor %}
+                ]
+            },
+            {% endfor %}
+        ]
+    });
+});
+</script>
+{% endblock %}
