@@ -34,7 +34,14 @@ class StatesList(ListView):
         qs = super(StatesList, self).get_queryset()
         if self.problems_only:
             qs = qs.filter(status__in=Status.problems())
+        qs = self.apply_get_params_filters(qs)
         return qs.order_by('host', 'name')
+
+    def apply_get_params_filters(self, qs):
+        params = self.request.GET.dict()
+        if 'status' in params:
+            params['status'] = Status.from_string(params['status'])
+        return qs.filter(**params)
 
     def get_context_data(self, **kwargs):
         queryset = self.get_queryset()

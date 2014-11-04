@@ -14,15 +14,15 @@
             <table>
                 <tr>
                     <td>Source:</td>
-                    <td>{{ state.source }}</td>
+                    <td><a href="{% url 'monitoring_all_states' %}?source_type={{ state.source_type.pk }}&source_id={{ state.source_id }}">{{ state.source }}</a></td>
                 </tr>
                 <tr>
                     <td>Host:</td>
-                    <td>{{ state.host|default_if_none:'' }}</td>
+                    <td><a href="{% url 'monitoring_all_states' %}?host={{ state.host }}">{{ state.host|default_if_none:'' }}</a></td>
                 </tr>
                 <tr>
                     <td>Name:</td>
-                    <td>{{ state.name }}</td>
+                    <td><a href="{% url 'monitoring_all_states' %}?name={{ state.name }}">{{ state.name }}</a></td>
                 </tr>
                 <tr>
                     <td>Last checked:</td>
@@ -30,7 +30,7 @@
                 </tr>
                 <tr>
                     <td>Status:</td>
-                    <td>{{ state.status.name|upper }}</td>
+                    <td><a href="{% url 'monitoring_all_states' %}?status={{ state.status.name }}">{{ state.status.name|upper }}</td>
                 </tr>
                 <tr>
                     <td>Last status change:</td>
