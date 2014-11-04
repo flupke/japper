@@ -45,7 +45,7 @@
             <ul id="host_{{ forloop.counter }}_states" class="list-group collapse">
                 {% for state in states %}
                 <li class="list-group-item">
-                    {{ state.name }}
+                    <a href="{{ state.get_absolute_url }}">{{ state }}</a>
 
                     {% if state.status == Status.critical %}
                     <span class="label label-danger">

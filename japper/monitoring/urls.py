@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
-from .views import MonitoringSourcesList, AlertSinksList, StatesList
+from .views import (MonitoringSourcesList, AlertSinksList, StatesList,
+        StateDetail)
 
 
 urlpatterns = patterns('',
@@ -14,4 +15,6 @@ urlpatterns = patterns('',
     url(r'^states/problems/$',
         login_required(StatesList.as_view(problems_only=True)),
         name='monitoring_problems'),
+    url(r'states/(?P<pk>\d+)/$', login_required(StateDetail.as_view()),
+        name='monitoring_state_detail'),
 )

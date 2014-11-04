@@ -1,5 +1,4 @@
-
-from vanilla import TemplateView, ListView
+from vanilla import TemplateView, ListView, DetailView
 
 from .plugins import iter_monitoring_backends, iter_alert_backends
 from .models import State
@@ -47,4 +46,11 @@ class StatesList(ListView):
                 Status=Status,
                 problems_only=self.problems_only,
                 **kwargs)
+
+
+class StateDetail(DetailView):
+
+    model = State
+    context_object_name = 'state'
+
 

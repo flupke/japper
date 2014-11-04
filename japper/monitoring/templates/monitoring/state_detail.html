@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h3>{{ state.status.name|upper }}: {{ state.full_path }}</h3>
+    <div id="state-heading" class="panel panel-default">
+        <div class="panel-heading">
+            <table>
+                <tr>
+                    <td>Source:</td>
+                    <td>{{ state.source }}</td>
+                </tr>
+                <tr>
+                    <td>Host:</td>
+                    <td>{{ state.host|default_if_none:'' }}</td>
+                </tr>
+                <tr>
+                    <td>Name:</td>
+                    <td>{{ state.name }}</td>
+                </tr>
+                <tr>
+                    <td>Last checked:</td>
+                    <td>{{ state.last_checked }} ({{ state.last_checked|timesince }} ago)</td>
+                </tr>
+                <tr>
+                    <td>Status:</td>
+                    <td>{{ state.status.name|upper }}</td>
+                </tr>
+                <tr>
+                    <td>Last status change:</td>
+                    <td>
+                        {% if state.last_status_change %}
+                        {{ state.last_status_change }} ({{ state.last_status_change|timesince }} ago)
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
+

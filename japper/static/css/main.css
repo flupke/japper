@@ -5,3 +5,7 @@ body {
 .cursor-pointer {
     cursor: pointer;
 }
+
+#state-heading table {
+    width: 100%;
+}

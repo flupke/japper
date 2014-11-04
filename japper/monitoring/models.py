@@ -91,3 +91,17 @@ class State(models.Model):
             states_by_host.append(host_group_data(prev_host, host_states))
 
         return states_by_host
+
+    def __unicode__(self):
+        return self.name
+
+    def full_path(self):
+        if self.host:
+            suffix = u'%s/%s' % (self.host, self.name)
+        else:
+            suffix = self.name
+        return u'/%s/%s' % (self.source, suffix)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return 'monitoring_state_detail', [self.pk]
