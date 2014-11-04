@@ -117,7 +117,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'monitoring:cleanup': {
         'task': 'japper.monitoring.tasks.cleanup',
-        'schedule': datetime.timedelta(minutes=30),
+        'schedule': datetime.timedelta(minutes=1),
     },
 }
 
