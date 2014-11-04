@@ -4,8 +4,6 @@ import sys
 
 if __name__ == '__main__':
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'japper.settings')
-
-    # Set development environment variables
     os.environ.setdefault('DEBUG', 'on')
     os.environ.setdefault('EMAIL_URL', 'consolemail://')
 
