@@ -8,7 +8,6 @@ Name: {{ new_state.name }}
 Status: {{ new_state.status.name|upper }}
 
 {{ new_state.output }}
-
-{% if new_state.metrics %}Metrics:{% for name, value in metrics.items %}
+{% if new_state.metrics %}Metrics:{% for name, value in new_state.metrics.items %}
     {{ name }}: {{ value }}{% endfor %}
 {% endif %}

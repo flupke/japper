@@ -3,7 +3,6 @@ from django.template import Context
 from django.template.loader import get_template
 
 from japper.monitoring.plugins.models import AlertSinkBase
-from japper.monitoring.status import Status
 from . import settings
 
 
@@ -14,9 +13,8 @@ class AlertSink(AlertSinkBase):
             return
 
         context = Context({
-            'prev_state': new_state,
+            'prev_state': prev_state,
             'new_state': new_state,
-            'Status': Status,
         })
         subject_template = get_template('django_email/subject.txt')
         subject = subject_template.render(context).strip()
