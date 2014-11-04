@@ -76,6 +76,7 @@ class State(models.Model):
     output = models.CharField(max_length=255, null=True)
     metrics = JSONField(null=True)
 
+    first_seen = models.DateTimeField(auto_now_add=True)
     last_checked = models.DateTimeField()
     last_status_change = models.DateTimeField(null=True)
 

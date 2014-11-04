@@ -25,6 +25,10 @@
                     <td><a href="{% url 'monitoring_all_states' %}?name={{ state.name }}">{{ state.name }}</a></td>
                 </tr>
                 <tr>
+                    <td>First seen:</td>
+                    <td>{{ state.first_seen }} ({{ state.first_seen|timesince }} ago)</td>
+                </tr>
+                <tr>
                     <td>Last checked:</td>
                     <td>{{ state.last_checked }} ({{ state.last_checked|timesince }} ago)</td>
                 </tr>
