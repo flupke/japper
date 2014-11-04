@@ -1,7 +1,8 @@
 from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
-from .views import CreateMonitoringSource, UpdateMonitoringSource
+from .views import (CreateMonitoringSource, UpdateMonitoringSource,
+        DeleteMonitoringSource)
 
 
 urlpatterns = patterns('',
@@ -11,4 +12,7 @@ urlpatterns = patterns('',
     url(r'^monitoring-source/(?P<pk>\d+)/$',
         login_required(UpdateMonitoringSource.as_view()),
         name='consul_update_monitoring_source'),
+    url(r'^monitoring-source/(?P<pk>\d+)/delete/$',
+        login_required(DeleteMonitoringSource.as_view()),
+        name='consul_delete_monitoring_source'),
 )
