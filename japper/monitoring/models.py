@@ -73,8 +73,9 @@ class State(models.Model):
                     if oldest_problem_date is None:
                         oldest_problem_date = state.last_status_change
                     else:
-                        oldest_problem_date = min(oldest_problem_date,
-                                state.last_status_change)
+                        if state.last_status_change is not None:
+                            oldest_problem_date = min(oldest_problem_date,
+                                    state.last_status_change)
             return (host, states, status_counter, oldest_problem_date)
 
         prev_host = no_host = object()
