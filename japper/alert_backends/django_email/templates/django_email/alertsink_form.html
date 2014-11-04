@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="container">
-    <h1>Create alert sink</h1>
-    {% crispy form %}
+    <h1>{% if object.pk %}Edit{% else %}Create{% endif %} alert sink</h1>
+    {% include 'include/submit_delete_form.html' with delete_view='django_email_delete_alert_sink' %}
 </div>
 {% endblock %}

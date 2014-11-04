@@ -1,4 +1,4 @@
-from vanilla import CreateView, UpdateView
+from vanilla import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 
 from .forms import AlertSinkForm
@@ -18,3 +18,8 @@ class UpdateAlertSink(UpdateView):
     model = AlertSink
     success_url = reverse_lazy('monitoring_alert_sinks')
 
+
+class DeleteAlertSink(DeleteView):
+
+    model = AlertSink
+    success_url = reverse_lazy('monitoring_alert_sinks')

@@ -102,7 +102,7 @@ def send_alerts(prev_state, new_state):
     for backend in iter_alert_backends():
         for sink in backend.get_instances(active=True):
             sink.send_alert(prev_state, new_state)
-            sink_link = sink.get_text_link()
+            sink_link = sink.get_alert_sink_text_link()
             for user in User.objects.filter(is_active=True,
                     profile__subscriptions__contains=sink_link):
                 sink.send_alert(prev_state, new_state, user=user)

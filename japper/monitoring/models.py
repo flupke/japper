@@ -152,3 +152,5 @@ class State(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return 'monitoring_state_detail', [self.pk]
+
+

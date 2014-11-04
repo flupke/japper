@@ -27,7 +27,7 @@ class UserSubscriptionsForm(forms.Form):
         for backend in iter_alert_backends():
             for sink in backend.get_instances():
                 choices.append((
-                    sink.get_text_link(), '%s/%s' %
+                    sink.get_alert_sink_text_link(), '%s/%s' %
                     (backend.get_name(), sink.name)
                 ))
         self.fields['subscriptions'] = forms.MultipleChoiceField(choices,

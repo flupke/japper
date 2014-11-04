@@ -1,3 +1,4 @@
+from django.db import models
 from django.core.mail import send_mail
 from django.template import Context
 from django.template.loader import get_template
@@ -22,3 +23,6 @@ class AlertSink(AlertSinkBase):
         body = body_template.render(context)
         send_mail(subject, body, settings.FROM_EMAIL, [user.email])
 
+    @models.permalink
+    def get_absolute_url(self):
+        return 'django_email_update_alert_sink', [self.pk]
