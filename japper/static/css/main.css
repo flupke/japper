@@ -9,3 +9,7 @@ body {
 #state-heading table {
     width: 100%;
 }
+
+.very-small {
+    font-size: 50%;
+}

@@ -8,6 +8,10 @@
         {% else %}
         States
         {% endif %}
+        <button id="expand-states" class="btn pull-right btn-default"
+                data-toggle="tooltip" data-placement="bottom" title="Expand states">
+            <span class="glyphicon glyphicon-align-left"></span>
+        </button>
     </h1>
 
     <div class="panel-group">
@@ -42,7 +46,7 @@
                     {% endif %}
                 </div>
             </div>
-            <ul id="host_{{ forloop.counter }}_states" class="list-group collapse">
+            <ul id="host_{{ forloop.counter }}_states" class="list-group collapse states-list">
                 {% for state in states %}
                 <li class="list-group-item">
                     <a href="{{ state.get_absolute_url }}">{{ state }}</a>
@@ -74,4 +78,16 @@
     </ul>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+$(function()
+{
+    $('#expand-states').click(function()
+    {
+        $('.states-list').collapse('toggle');
+    }).tooltip();
+});
+</script>
 {% endblock %}
