@@ -1,5 +1,5 @@
 from django.db import models
-from django.utils.lru_cache import lru_cache
+from django.utils.functional import cached_property
 
 from japper.monitoring.plugins.models import MonitoringSourceBase
 from japper.monitoring.status import Status
@@ -15,15 +15,14 @@ class MonitoringSource(MonitoringSourceBase):
             'when using autoscaling on EC2) and offline hosts should be '
             'removed instead of generating alerts')
 
-    @lru_cache()
-    def get_checks_state(self):
+    @cached_property
+    def checks_state(self):
         client = Client(self.endpoints.split())
         return client.request('GET', '/v1/health/state/any')
 
     def get_check_results(self):
-        checks = self.get_checks_state()
         ret = []
-        for check in checks:
+        for check in self.checks_state:
             output, metrics = parse_nagios_output(check['Output'])
             status = Status.from_string(check['Status'])
             check_dict = {
@@ -40,8 +39,7 @@ class MonitoringSource(MonitoringSourceBase):
         if not self.dynamic_hosts:
             return []
         ret = []
-        checks = self.get_checks_state()
-        for check in checks:
+        for check in self.checks_state:
             if check['CheckID'] == 'serfHealth':
                 status = Status.from_string(check['Status'])
                 if status is Status.critical:

@@ -3,7 +3,7 @@ from collections import Counter, defaultdict
 import humanfriendly
 
 from django.db import models
-from django.utils.lru_cache import lru_cache
+from django.utils.functional import cached_property
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from jsonfield import JSONField
@@ -118,15 +118,14 @@ class State(models.Model):
 
         return states_by_host
 
-    @lru_cache()
-    def get_metrics_series(self):
+    @cached_property
+    def metrics_series(self):
         '''
         Aggregate check results metrics series attached to this state.
         '''
-        results = CheckResult.objects.get_state_log(self, reverse=False,
-                max_results=1000)
+        results = CheckResult.objects.get_state_log(self, max_results=1000)
         metrics = defaultdict(list)
-        for result in results:
+        for result in reversed(results):
             for name, value in result.metrics.items():
                 if isinstance(value, six.string_types):
                     try:

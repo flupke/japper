@@ -69,7 +69,7 @@ $(function () {
             }
         },
         series: [
-            {% for name, values in state.get_metrics_series.items %}
+            {% for name, values in state.metrics_series.items %}
             {
                 name: '{{ name }}',
                 data: [
