@@ -2,8 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import japper.monitoring.plugins.models
-import japper.monitoring.models
 import japper.monitoring.status
 import jsonfield.fields
 import enumfields.fields
@@ -20,11 +18,13 @@ class Migration(migrations.Migration):
             name='CheckResult',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('timestamp', models.DateTimeField(auto_now_add=True, db_index=True)),
                 ('source_id', models.PositiveIntegerField()),
+                ('name', models.CharField(max_length=255)),
                 ('host', models.CharField(max_length=255, null=True)),
                 ('status', enumfields.fields.EnumIntegerField(max_length=10, enum=japper.monitoring.status.Status)),
+                ('output', models.CharField(max_length=255, null=True)),
                 ('metrics', jsonfield.fields.JSONField(null=True)),
+                ('timestamp', models.DateTimeField(auto_now_add=True, db_index=True)),
                 ('source_type', models.ForeignKey(to='contenttypes.ContentType')),
             ],
             options={
@@ -36,11 +36,14 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('source_id', models.PositiveIntegerField()),
-                ('name', models.CharField(max_length=255)),
+                ('name', models.CharField(max_length=255, db_index=True)),
                 ('host', models.CharField(max_length=255, null=True, db_index=True)),
                 ('status', enumfields.fields.EnumIntegerField(db_index=True, max_length=10, enum=japper.monitoring.status.Status)),
+                ('output', models.CharField(max_length=255, null=True)),
                 ('metrics', jsonfield.fields.JSONField(null=True)),
-                ('last_checked', models.DateTimeField(auto_now=True, auto_now_add=True)),
+                ('first_seen', models.DateTimeField(auto_now_add=True)),
+                ('last_checked', models.DateTimeField()),
+                ('last_status_change', models.DateTimeField(null=True)),
                 ('source_type', models.ForeignKey(to='contenttypes.ContentType')),
             ],
             options={
@@ -49,11 +52,13 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='state',
-            unique_together=set([('source_type', 'source_id', 'name')]),
+            unique_together=set([('source_type', 'source_id', 'host', 'name')]),
         ),
-        migrations.AlterIndexTogether(
+        migrations.AddField(
+            model_name='checkresult',
             name='state',
-            index_together=set([('source_type', 'source_id')]),
+            field=models.ForeignKey(related_name='check_results', to='monitoring.State'),
+            preserve_default=True,
         ),
         migrations.AlterIndexTogether(
             name='checkresult',

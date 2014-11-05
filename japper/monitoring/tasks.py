@@ -31,9 +31,9 @@ def fetch_check_results():
             # Create CheckResult objects (only for new checks and hosts)
             for result in check_results:
                 check_obj = CheckResult.from_dict(source, result)
-                check_obj.save()
+                check_obj.timestamp = timezone.now()
                 if check_obj.host not in removed_hosts:
-                    State.objects.get_or_create(
+                    state, _ = State.objects.get_or_create(
                         source_type=source_content_type,
                         source_id=source.pk,
                         name=check_obj.name,
@@ -45,6 +45,8 @@ def fetch_check_results():
                             'last_checked': check_obj.timestamp,
                         }
                     )
+                    check_obj.state = state
+                    check_obj.save()
 
             # Delete removed hosts
             State.objects.filter(sources=source,

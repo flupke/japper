@@ -25,11 +25,7 @@ class CheckResultManager(models.Manager):
             order_by = '-timestamp'
         else:
             order_by = 'timestamp'
-        return self.filter(
-            source_type=state.source_type,
-            source_id=state.source_id,
-            host=state.host,
-            name=state.name).order_by(order_by)[:max_results]
+        return self.filter(state=state).order_by(order_by)[:max_results]
 
 
 class CheckResult(models.Model):
@@ -41,8 +37,7 @@ class CheckResult(models.Model):
 
     objects = CheckResultManager()
 
-    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
-
+    state = models.ForeignKey('State', related_name='check_results')
     source_type = models.ForeignKey(ContentType)
     source_id = models.PositiveIntegerField()
     source = GenericForeignKey('source_type', 'source_id')
@@ -52,6 +47,8 @@ class CheckResult(models.Model):
     status = EnumIntegerField(Status)
     output = models.CharField(max_length=255, null=True)
     metrics = JSONField(null=True)
+
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
 
     @classmethod
     def from_dict(cls, source, data):
