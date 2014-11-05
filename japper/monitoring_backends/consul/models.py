@@ -46,6 +46,9 @@ class MonitoringSource(MonitoringSourceBase):
                     ret.append(check['Node'])
         return ret
 
+    def has_dynamic_hosts(self):
+        return self.dynamic_hosts
+
     @models.permalink
     def get_absolute_url(self):
         return ('consul_update_monitoring_source', [self.pk])

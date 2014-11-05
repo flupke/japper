@@ -64,9 +64,20 @@ class MonitoringSourceBase(BackendInstanceBase):
         '''
         Return the list of hosts names that must be removed from monitoring.
 
-        The default implementation returns an empty list.
+        The default implementation returns an empty list. Models returning
+        something here should also probably implement
+        :meth:`has_dynamic_hosts`.
         '''
         return []
+
+    def has_dynamic_hosts(self):
+        '''
+        Return a boolean indicating if this monitoring source has dynamic
+        hosts.
+
+        The default implementation returns False.
+        '''
+        return False
 
     class Meta:
         abstract = True
