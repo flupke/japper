@@ -4,6 +4,9 @@ import six
 from django.db import models
 from django.db.models.base import ModelBase
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericRelation
+
+from ..models import CheckResult, State
 
 
 class ABCModelMeta(abc.ABCMeta, ModelBase):
@@ -27,6 +30,11 @@ class MonitoringSourceBase(BackendInstanceBase):
     '''
     Base model for monitoring sources.
     '''
+
+    check_results = GenericRelation(CheckResult,
+            content_type_field='source_type', object_id_field='source_id')
+    states = GenericRelation(State,
+            content_type_field='source_type', object_id_field='source_id')
 
     @abc.abstractmethod
     def get_check_results(self):
