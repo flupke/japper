@@ -47,12 +47,11 @@ def fetch_check_results():
                     )
 
             # Delete removed hosts
-            State.objects.filter(source_type=source_content_type,
-                    source_id=source.pk, host__in=removed_hosts).delete()
+            State.objects.filter(sources=source,
+                    host__in=removed_hosts).delete()
 
             # Analyze check results time series and update remaining states
-            for state in State.objects.filter(source_type=source_content_type,
-                    source_id=source.pk):
+            for state in State.objects.filter(sources=source):
                 update_monitoring_states.delay(state.pk)
 
 

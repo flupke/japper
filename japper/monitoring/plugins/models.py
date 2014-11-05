@@ -31,9 +31,9 @@ class MonitoringSourceBase(BackendInstanceBase):
     Base model for monitoring sources.
     '''
 
-    check_results = GenericRelation(CheckResult,
+    check_results = GenericRelation(CheckResult, related_query_name='sources',
             content_type_field='source_type', object_id_field='source_id')
-    states = GenericRelation(State,
+    states = GenericRelation(State, related_query_name='sources',
             content_type_field='source_type', object_id_field='source_id')
 
     @abc.abstractmethod
