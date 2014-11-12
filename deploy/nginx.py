@@ -52,6 +52,7 @@ class NginxJapperDeployScript(PythonDeployScript):
     def get_config_context(self, **kwargs):
         context = self.dvars.copy()
         context.update(kwargs)
+        context['base_dir'] = self.ddata['base_dir']
         return context
 
     def restart_backend_process(self):
