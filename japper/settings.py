@@ -20,6 +20,7 @@ env = environ.Env(
     DEBUG=(bool, False),
     STATIC_ROOT=(str, None),
     ALLOWED_HOSTS=(list, []),
+    BROKER_URL=(str, 'amqp://guest:guest@localhost:5672//')
 )
 
 # Quick-start development settings - unsuitable for production
@@ -135,3 +136,7 @@ LOGOUT_URL = 'logout'
 # Proxy settings
 
 SECURE_PROXY_SSL_HEADER = ('X-Forwarded-Proto', 'https')
+
+# Celery settings
+
+BROKER_URL = env('BROKER_URL')
