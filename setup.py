@@ -32,6 +32,7 @@ install_requires = [
     'celery==3.1.16',
     'django-simple-menu==1.0.9',
     'django-annoying==0.8.0',
+    'humanfriendly==1.9.6',
 ]
 
 postgres_requires = [
