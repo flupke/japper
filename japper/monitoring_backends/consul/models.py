@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 from django.utils.functional import cached_property
 
 from japper.monitoring.plugins.models import MonitoringSourceBase
@@ -49,6 +50,6 @@ class MonitoringSource(MonitoringSourceBase):
     def has_dynamic_hosts(self):
         return self.dynamic_hosts
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('consul_update_monitoring_source', [self.pk])
+        return reverse('consul_update_monitoring_source',
+                kwargs={'pk': self.pk})
