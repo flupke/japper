@@ -19,6 +19,7 @@ from japper.monitoring.plugins import get_installed_apps
 env = environ.Env(
     DEBUG=(bool, False),
     STATIC_ROOT=(str, None),
+    ALLOWED_HOSTS=(list, []),
 )
 
 # Quick-start development settings - unsuitable for production
@@ -32,7 +33,7 @@ DEBUG = env('DEBUG')
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 
 # Application definition
