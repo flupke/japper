@@ -16,7 +16,8 @@ class NginxJapperDeployScript(PythonDeployScript):
     ]
 
     def setup_packages(self):
-        self.venv.run('pip', 'install', '-e', '.', 'japper[postgres]')
+        self.venv.run('pip', 'install', '-e', '.', 'japper[postgres]',
+                'japper[uwsgi]')
 
     def install(self):
         # Expand user in static root location

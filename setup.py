@@ -43,6 +43,10 @@ mysql_requires = [
     'MySQL-python==1.2.5',
 ]
 
+uwsgi_requires = [
+    'uwsgi==2.0.8',
+]
+
 
 class PyTest(TestCommand):
 
@@ -74,6 +78,7 @@ setup(
         'dev': dev_requires,
         'postgres': install_requires + postgres_requires,
         'mysql': install_requires + mysql_requires,
+        'uwsgi': install_requires + uwsgi_requires,
     },
     tests_require=tests_require,
     cmdclass={'test': PyTest},
