@@ -130,3 +130,7 @@ globals().update(env.email_url(default='smtp://localhost'))
 LOGIN_REDIRECT_URL = 'monitoring_problems'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
+
+# Proxy settings
+
+SECURE_PROXY_SSL_HEADER = ('X-Forwarded-Proto', 'https')

@@ -1,0 +1,7 @@
+deployment_groups:
+    dev:
+        branch: __current__
+        push: True
+        push_tags: True
+        deployments:
+            - https://cloudy.stupeflix.com/api/deployments/111e9bddac8e4756aeecb1d1f4266a15/poll/
