@@ -56,7 +56,7 @@ class NginxJapperDeployScript(PythonDeployScript):
 
     def restart_backend_process(self):
         sudo('supervisorctl', 'update')
-        reload_file = '/tmp/%s.reload' % self.dvars['supervisord']['proc_name']
+        reload_file = '/tmp/%s.reload' % self.dvars['supervisord']['web_proc_name']
         sudo('touch', reload_file)
 
     def post_install(self):
