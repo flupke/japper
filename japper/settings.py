@@ -20,7 +20,8 @@ env = environ.Env(
     DEBUG=(bool, False),
     STATIC_ROOT=(str, None),
     ALLOWED_HOSTS=(list, []),
-    BROKER_URL=(str, 'amqp://guest:guest@localhost:5672//')
+    BROKER_URL=(str, 'amqp://guest:guest@localhost:5672//'),
+    RAVEN_DSN=(str, None),
 )
 
 # Quick-start development settings - unsuitable for production
@@ -48,6 +49,7 @@ INSTALLED_APPS = get_installed_apps((
 
     'crispy_forms',
     'menu',
+    'raven.contrib.django.raven_compat',
 
     'japper',
     'japper.monitoring',
@@ -140,3 +142,7 @@ SECURE_PROXY_SSL_HEADER = ('X-Forwarded-Proto', 'https')
 # Celery settings
 
 BROKER_URL = env('BROKER_URL')
+
+RAVEN_CONFIG = {
+    'dsn': env('RAVEN_DSN'),
+}

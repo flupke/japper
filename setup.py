@@ -33,6 +33,7 @@ install_requires = [
     'django-simple-menu==1.0.9',
     'django-annoying==0.8.0',
     'humanfriendly==1.9.6',
+    'raven==5.1.1',
 ]
 
 postgres_requires = [

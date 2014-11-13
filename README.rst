@@ -3,11 +3,16 @@ japper
 
 A multi backend alerting tool.
 
-Backends
-========
+Built-in backends
+=================
 
-* consul
-* graphite
+Monitoring backends:
+
+    * consul
+
+Alerting backends:
+
+    * email
 
 Acknowledgements
 ================
