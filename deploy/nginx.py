@@ -57,8 +57,13 @@ class NginxJapperDeployScript(PythonDeployScript):
 
     def restart_backend_process(self):
         sudo('supervisorctl', 'update')
+        # Gracefuly restart web backend
         reload_file = '/tmp/%s.reload' % self.dvars['supervisord']['web_proc_name']
         sudo('touch', reload_file)
+        # Restart celery processes
+        sudo('supervisorctl', 'restart',
+                self.dvars['supervisord']['celery_worker_proc_name'],
+                self.dvars['supervisord']['celery_beat_proc_name'])
 
     def post_install(self):
         self.restart_backend_process()
