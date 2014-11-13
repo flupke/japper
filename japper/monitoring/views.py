@@ -41,6 +41,7 @@ class StatesList(ListView):
         params = self.request.GET.dict()
         if 'status' in params:
             params['status'] = Status.from_string(params['status'])
+        params.pop('page', None)
         return qs.filter(**params)
 
     def get_context_data(self, **kwargs):
