@@ -33,7 +33,7 @@ def fetch_check_results():
                 check_obj = CheckResult.from_dict(source, result)
                 check_obj.timestamp = timezone.now()
                 if check_obj.host not in removed_hosts:
-                    state, _ = State.objects.get_or_create(
+                    state, created = State.objects.get_or_create(
                         source_type=source_content_type,
                         source_id=source.pk,
                         name=check_obj.name,
@@ -45,6 +45,8 @@ def fetch_check_results():
                             'last_checked': check_obj.timestamp,
                         }
                     )
+                    if created and state.status.is_problem():
+                        send_alerts.delay(None, state)
                     check_obj.state = state
                     check_obj.save()
 

@@ -110,6 +110,9 @@ class AlertSinkBase(BackendInstanceBase):
         *user* may or may not be given depending on the scope of the sink
         (per-user or global), it is the responsibility of the implementation to
         send a message or not depending on its presence.
+
+        *prev_state* may be None, in cases where a new state is created and is
+        initially in a problem status.
         '''
 
     def get_alert_sink_text_link(self):

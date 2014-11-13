@@ -1,6 +1,6 @@
 {{ new_state.full_path }} is {{ new_state.status.name|upper }}
 
-State changed from {{ prev_state.status.name|upper }} to {{ new_state.status.name|upper }}
+{% if prev_state %}State changed from {{ prev_state.status.name|upper }} to {{ new_state.status.name|upper }}{% else %}State is {{ new_state.status.name|upper }}{% endif %}
 
 Source: {{ new_state.source }}
 Host: {{ new_state.host|default_if_none:'' }}
