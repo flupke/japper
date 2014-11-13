@@ -70,6 +70,13 @@ class MonitoringSourceBase(BackendInstanceBase):
         '''
         return []
 
+    def get_content_type(self):
+        '''
+        Return the :class:`django.contrib.contenttypes.models.ContentType`
+        object associated with this model.
+        '''
+        return ContentType.objects.get_for_model(self)
+
     def has_dynamic_hosts(self):
         '''
         Return a boolean indicating if this monitoring source has dynamic
