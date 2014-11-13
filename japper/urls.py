@@ -1,12 +1,13 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 
 from japper.monitoring.views import StatesList
+from japper.monitoring.plugins import get_url_patterns
 
 
-urlpatterns = patterns('',
+urlpatterns = get_url_patterns('',
     url(r'^$',login_required(StatesList.as_view(problems_only=True)),
         name='frontpage'),
     url(r'^admin/', include(admin.site.urls)),
