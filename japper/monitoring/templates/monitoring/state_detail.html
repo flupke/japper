@@ -10,6 +10,7 @@
     <h1>State detail</h1>
     <h3>{{ state.status.name|upper }}: {{ state.full_path }}</h3>
     <div id="state-heading" class="panel panel-default">
+        <a href="{% url 'monitoring_state_history' state.pk %}" id="state-history-link" class="btn btn-default">History</a>
         <div class="panel-heading">
             <table>
                 <tr>

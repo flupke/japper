@@ -2,7 +2,7 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
 from .views import (MonitoringSourcesList, AlertSinksList, StatesList,
-        StateDetail)
+        StateDetail, StateHistory)
 
 
 urlpatterns = patterns('',
@@ -17,4 +17,7 @@ urlpatterns = patterns('',
         name='monitoring_problems'),
     url(r'states/(?P<pk>\d+)/$', login_required(StateDetail.as_view()),
         name='monitoring_state_detail'),
+    url(r'states/(?P<pk>\d+)/history/$',
+        login_required(StateHistory.as_view()),
+        name='monitoring_state_history'),
 )

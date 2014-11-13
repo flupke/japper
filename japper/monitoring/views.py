@@ -1,7 +1,7 @@
 from vanilla import TemplateView, ListView, DetailView
 
 from .plugins import iter_monitoring_backends, iter_alert_backends
-from .models import State
+from .models import State, CheckResult
 from .status import Status
 
 
@@ -61,3 +61,17 @@ class StateDetail(DetailView):
     context_object_name = 'state'
 
 
+class StateHistory(DetailView):
+
+    model = State
+    paginate_by = 10
+    template_name = 'monitoring/state_history.html'
+
+    def get_context_data(self, **kwargs):
+        state = self.get_object()
+        check_results = CheckResult.objects.get_state_log(state, max_results=None)
+        paginate_by = self.get_paginate_by()
+        page = self.paginate_queryset(check_results, paginate_by)
+        return super(StateHistory, self).get_context_data(page_obj=page,
+                check_results=page.object_list, paginator=page.paginator,
+                **kwargs)
