@@ -45,7 +45,7 @@
             </div>
             <div class="row">
                 <div class="col-md-2">Check output:</div>
-                <div class="col-md-10">{{ state.output }}</div>
+                <div class="col-md-10">{{ state.output|default_if_none:'' }}</div>
             </div>
         </div>
         <a href="{% url 'monitoring_state_history' state.pk %}" id="state-history-link" class="btn btn-default">History</a>

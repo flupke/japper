@@ -34,7 +34,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-2">Check output:</div>
-                    <div class="col-md-10">{{ result.output }}</div>
+                    <div class="col-md-10">{{ result.output|default_if_none:'' }}</div>
                 </div>
             </div>
         </div>
