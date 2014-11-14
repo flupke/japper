@@ -83,12 +83,12 @@ def update_monitoring_states(state_pk):
     # Retrieve last check results
     results = list(CheckResult.objects.get_state_log(state,
             max_results=settings.MIN_CONSECUTIVE_STATUSES))
+    last_check_result = results[0]
 
     # Is there enough check results to do anything?
     if len(results) >= settings.MIN_CONSECUTIVE_STATUSES:
         # If all previous check statuses are equal and different than the current
         # state status, update state
-        last_check_result = results[0]
         statuses = [r.status for r in results]
         if statuses.count(statuses[0]) == len(statuses):
             if state.status != statuses[0]:
@@ -96,9 +96,19 @@ def update_monitoring_states(state_pk):
                 state.ouptut = last_check_result.output
                 state.metrics = last_check_result.metrics
                 state.last_status_change = last_check_result.timestamp
+                if (not state.initial_bad_status_reported and
+                        not state.status.is_problem()):
+                    # Initial status was not OK, and it changed to an OK state
+                    # before having enough check results to generate an alert.
+                    # This was a "startup blip", so don't send an alert when
+                    # the status goes back to normal.
+                    pass
+                else:
+                    # Notify users of the status change
+                    send_alerts.delay(prev_state, state)
+                # Always set the initial_bad_status_reported flag here, to kill
+                # initial status special cases once the status has changed
                 state.initial_bad_status_reported = True
-                # Notify users of the status change
-                send_alerts.delay(prev_state, state)
             elif (statuses[0].is_problem() and
                     not state.initial_bad_status_reported):
                 # If state had initially a non-OK status, also send an alert
