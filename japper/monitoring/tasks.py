@@ -1,12 +1,12 @@
 import copy
 
 from django.utils import timezone
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import User
 from celery import shared_task
 from celery.utils.log import get_task_logger
 
 from .models import CheckResult, State
+from .status import Status
 from .plugins import iter_monitoring_backends, iter_alert_backends
 from . import settings
 
@@ -21,42 +21,51 @@ def fetch_check_results():
     '''
     for backend in iter_monitoring_backends():
         for source in backend.get_instances(active=True):
-            # Get ContentType of the source model for filtering querysets
-            source_content_type = ContentType.objects.get_for_model(source)
+            try:
+                fetch_source_check_results(source)
+            except Exception as exc:
+                status = Status.critical
+                check_output = unicode(exc)
+            else:
+                status = Status.passing
+                check_output = None
 
-            # Get check results and removed hosts
-            check_results = source.get_check_results()
-            removed_hosts = set(source.get_removed_hosts())
+            # Also store a check result for the monitoring source
+            source_health_name = '%s:health' % source
+            check_obj = CheckResult(source=source, status=status,
+                    name=source_health_name, host=source_health_name,
+                    output=check_output)
+            # Not sure if django sets auto_now_add fields in constructor,
+            # better set it by hand
+            check_obj.timestamp = timezone.now()
+            state, _ = State.objects.get_or_create_from_check_result(check_obj)
+            check_obj.state = state
+            check_obj.save()
 
-            # Create CheckResult objects (only for new checks and hosts)
-            for result in check_results:
-                check_obj = CheckResult.from_dict(source, result)
-                check_obj.timestamp = timezone.now()
-                if check_obj.host not in removed_hosts:
-                    state, created = State.objects.get_or_create(
-                        source_type=source_content_type,
-                        source_id=source.pk,
-                        name=check_obj.name,
-                        host=check_obj.host,
-                        defaults={
-                            'status': check_obj.status,
-                            'output': check_obj.output,
-                            'metrics': check_obj.metrics,
-                            'last_checked': check_obj.timestamp,
-                        }
-                    )
-                    if created and state.status.is_problem():
-                        send_alerts.delay(None, state)
-                    check_obj.state = state
-                    check_obj.save()
-
-            # Delete removed hosts
-            State.objects.filter(sources=source,
-                    host__in=removed_hosts).delete()
-
-            # Analyze check results time series and update remaining states
+            # Analyze check results time series and update states
             for state in State.objects.filter(sources=source):
                 update_monitoring_states.delay(state.pk)
+
+
+def fetch_source_check_results(source):
+    # Get check results and removed hosts
+    check_results = source.get_check_results()
+    removed_hosts = set(source.get_removed_hosts())
+
+    # Create CheckResult objects (only for new checks and hosts)
+    for check_dict in check_results:
+        check_obj = CheckResult.from_dict(source, check_dict)
+        # Not sure if django sets auto_now_add fields in constructor,
+        # better set it by hand
+        check_obj.timestamp = timezone.now()
+        if check_obj.host not in removed_hosts:
+            state, _ = State.objects.get_or_create_from_check_result(check_obj)
+            check_obj.state = state
+            check_obj.save()
+
+    # Delete removed hosts states
+    State.objects.filter(sources=source,
+            host__in=removed_hosts).delete()
 
 
 @shared_task
@@ -75,7 +84,7 @@ def update_monitoring_states(state_pk):
     results = list(CheckResult.objects.get_state_log(state,
             max_results=settings.MIN_CONSECUTIVE_STATUSES))
 
-    # Is there enough check results to modify state?
+    # Is there enough check results to do anything?
     if len(results) >= settings.MIN_CONSECUTIVE_STATUSES:
         # If all previous check statuses are equal and different than the current
         # state status, update state
@@ -87,8 +96,15 @@ def update_monitoring_states(state_pk):
                 state.ouptut = last_check_result.output
                 state.metrics = last_check_result.metrics
                 state.last_status_change = last_check_result.timestamp
+                state.initial_bad_status_reported = True
                 # Notify users of the status change
                 send_alerts.delay(prev_state, state)
+            elif (statuses[0].is_problem() and
+                    not state.initial_bad_status_reported):
+                # If state had initially a non-OK status, also send an alert
+                # (only once)
+                state.initial_bad_status_reported = True
+                send_alerts.delay(None, state)
 
     # Always update last_checked timestamp
     state.last_checked = last_check_result.timestamp

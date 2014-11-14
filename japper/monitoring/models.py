@@ -58,6 +58,25 @@ class CheckResult(models.Model):
         index_together = ['source_type', 'source_id']
 
 
+class StateManager(models.Manager):
+
+    def get_or_create_from_check_result(self, check_result):
+        source = check_result.source
+        source_content_type = ContentType.objects.get_for_model(source)
+        return State.objects.get_or_create(
+            source_type=source_content_type,
+            source_id=source.pk,
+            name=check_result.name,
+            host=check_result.host,
+            defaults={
+                'status': check_result.status,
+                'output': check_result.output,
+                'metrics': check_result.metrics,
+                'last_checked': check_result.timestamp,
+            }
+        )
+
+
 class State(models.Model):
     '''
     The current state for a service or a node.
@@ -76,6 +95,7 @@ class State(models.Model):
     first_seen = models.DateTimeField(auto_now_add=True)
     last_checked = models.DateTimeField()
     last_status_change = models.DateTimeField(null=True)
+    initial_bad_status_reported = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ['source_type', 'source_id', 'host', 'name']
