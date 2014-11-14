@@ -22,6 +22,7 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     BROKER_URL=(str, 'amqp://guest:guest@localhost:5672//'),
     RAVEN_DSN=(str, None),
+    SITE_URL=(str, 'http://127.0.0.1:8000/'),
 )
 
 # Quick-start development settings - unsuitable for production
@@ -37,6 +38,7 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
+SITE_URL = env('SITE_URL')
 
 # Application definition
 INSTALLED_APPS = get_installed_apps((
