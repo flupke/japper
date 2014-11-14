@@ -9,33 +9,33 @@
     <div class="panel-group">
         {% for result in check_results %}
         <div id="state-heading" class="panel panel-default">
-            <div class="panel-heading">
-                <table>
-                    <tr>
-                        <td>Source:</td>
-                        <td><a href="{% url 'monitoring_all_states' %}?source_type={{ result.source_type.pk }}&source_id={{ result.source_id }}">{{ result.source }}</a></td>
-                    </tr>
-                    <tr>
-                        <td>Host:</td>
-                        <td><a href="{% url 'monitoring_all_states' %}?host={{ result.host }}">{{ result.host|default_if_none:'' }}</a></td>
-                    </tr>
-                    <tr>
-                        <td>Name:</td>
-                        <td><a href="{% url 'monitoring_all_states' %}?name={{ result.name }}">{{ result.name }}</a></td>
-                    </tr>
-                    <tr>
-                        <td>Date:</td>
-                        <td>{{ result.timestamp }}</td>
-                    </tr>
-                    <tr>
-                        <td>Status:</td>
-                        <td><a href="{% url 'monitoring_all_states' %}?status={{ result.status.name }}">{{ result.status.name|upper }}</td>
-                    </tr>
-                    <tr>
-                        <td>Check output:</td>
-                        <td>{{ result.output }}</td>
-                    </tr>
-                </table>
+            <div class="panel-heading container">
+                <div class="row">
+                    <div class="col-md-2">Source:</div>
+                    <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?source_type={{ result.source_type.pk }}&source_id={{ result.source_id }}">{{ result.source }}</a></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">Host:</div>
+                    <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?host={{ result.host }}">{{ result.host|default_if_none:'' }}</a></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">Name:</div>
+                    <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?name={{ result.name }}">{{ result.name }}</a></div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">Date:</div>
+                    <div class="col-md-10">{{ result.timestamp }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">Status:</div>
+                    <div class="col-md-10">
+                        <a href="{% url 'monitoring_all_states' %}?status={{ result.status.name }}">{{ result.status.name|upper }}</a>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">Check output:</div>
+                    <div class="col-md-10">{{ result.output }}</div>
+                </div>
             </div>
         </div>
         {% endfor %}
