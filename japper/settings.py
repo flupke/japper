@@ -23,6 +23,7 @@ env = environ.Env(
     BROKER_URL=(str, 'amqp://guest:guest@localhost:5672//'),
     RAVEN_DSN=(str, None),
     SITE_URL=(str, 'http://127.0.0.1:8000/'),
+    CACHE_URL=(environ.Env.cache_url, 'rediscache://127.0.0.1:6379:7'),
 )
 
 # Quick-start development settings - unsuitable for production
@@ -148,3 +149,11 @@ BROKER_URL = env('BROKER_URL')
 RAVEN_CONFIG = {
     'dsn': env('RAVEN_DSN'),
 }
+
+# Cache settings
+
+CACHES = {'default': env.cache()}
+
+# Distributed lock settings
+
+DISTRIBUTEDLOCK_CLIENT = "cache"
