@@ -63,7 +63,7 @@ class StateManager(models.Manager):
     def get_or_create_from_check_result(self, check_result):
         source = check_result.source
         source_content_type = ContentType.objects.get_for_model(source)
-        return State.objects.get_or_create(
+        return self.get_or_create(
             source_type=source_content_type,
             source_id=source.pk,
             name=check_result.name,
@@ -81,6 +81,8 @@ class State(models.Model):
     '''
     The current state for a service or a node.
     '''
+
+    objects = StateManager()
 
     source_type = models.ForeignKey(ContentType)
     source_id = models.PositiveIntegerField()
