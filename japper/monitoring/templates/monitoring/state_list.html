@@ -15,7 +15,7 @@
     </h1>
 
     <div class="panel-group">
-        {% for host, states, status_counter, oldest_problem_date in states_by_host %}
+        {% for host, states, status_counter, oldest_problem_date, might_be_starting in states_by_host %}
         <div class="panel
                 {% if status_counter.critical %}
                 panel-danger
@@ -30,6 +30,8 @@
                 {{ host }}
                 {% if oldest_problem_date %}
                 (since {{ oldest_problem_date|timesince }})
+                {% elif might_be_starting %}
+                (host is probably starting up, no alerts sent)
                 {% endif %}
                 <div class="pull-right">
                     {% if status_counter.unknown %}

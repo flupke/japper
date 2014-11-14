@@ -112,6 +112,7 @@ class State(models.Model):
         def host_group_data(host, states):
             status_counter = Counter()
             oldest_problem_date = None
+            might_be_starting = True
             for state in states:
                 status_counter[state.status.name] += 1
                 if state.status.is_problem():
@@ -121,7 +122,10 @@ class State(models.Model):
                         if state.last_status_change is not None:
                             oldest_problem_date = min(oldest_problem_date,
                                     state.last_status_change)
-            return (host, states, status_counter, oldest_problem_date)
+                if state.initial_bad_status_reported:
+                    might_be_starting = False
+            return (host, states, status_counter, oldest_problem_date,
+                    might_be_starting)
 
         prev_host = no_host = object()
         host_states = []
