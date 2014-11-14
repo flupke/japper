@@ -75,22 +75,20 @@ def update_monitoring_states(state_pk):
     results = list(CheckResult.objects.get_state_log(state,
             max_results=settings.MIN_CONSECUTIVE_STATUSES))
 
-    # Is there enough check results to take a decision?
-    if len(results) < settings.MIN_CONSECUTIVE_STATUSES:
-        return
-    last_check_result = results[0]
-
-    # If all previous check statuses are equal and different than the current
-    # state status, update state
-    statuses = [r.status for r in results]
-    if statuses.count(statuses[0]) == len(statuses):
-        if state.status != statuses[0]:
-            state.status = statuses[0]
-            state.ouptut = last_check_result.output
-            state.metrics = last_check_result.metrics
-            state.last_status_change = last_check_result.timestamp
-            # Notify users of the status change
-            send_alerts.delay(prev_state, state)
+    # Is there enough check results to modify state?
+    if len(results) >= settings.MIN_CONSECUTIVE_STATUSES:
+        # If all previous check statuses are equal and different than the current
+        # state status, update state
+        last_check_result = results[0]
+        statuses = [r.status for r in results]
+        if statuses.count(statuses[0]) == len(statuses):
+            if state.status != statuses[0]:
+                state.status = statuses[0]
+                state.ouptut = last_check_result.output
+                state.metrics = last_check_result.metrics
+                state.last_status_change = last_check_result.timestamp
+                # Notify users of the status change
+                send_alerts.delay(prev_state, state)
 
     # Always update last_checked timestamp
     state.last_checked = last_check_result.timestamp
