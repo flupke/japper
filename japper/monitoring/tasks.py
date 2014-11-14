@@ -72,11 +72,11 @@ def update_monitoring_states(state_pk):
     prev_state = copy.deepcopy(state)
 
     # Retrieve last check results
-    results = CheckResult.objects.get_state_log(state,
-            max_results=settings.MIN_CONSECUTIVE_STATUSES)
+    results = list(CheckResult.objects.get_state_log(state,
+            max_results=settings.MIN_CONSECUTIVE_STATUSES))
 
     # Is there enough check results to take a decision?
-    if results.count() < settings.MIN_CONSECUTIVE_STATUSES:
+    if len(results) < settings.MIN_CONSECUTIVE_STATUSES:
         return
     last_check_result = results[0]
 
