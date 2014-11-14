@@ -93,7 +93,7 @@ def update_monitoring_states(state_pk):
         if statuses.count(statuses[0]) == len(statuses):
             if state.status != statuses[0]:
                 state.status = statuses[0]
-                state.ouptut = last_check_result.output
+                state.output = last_check_result.output
                 state.metrics = last_check_result.metrics
                 state.last_status_change = last_check_result.timestamp
                 if (not state.initial_bad_status_reported and
