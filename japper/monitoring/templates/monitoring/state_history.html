@@ -9,7 +9,7 @@
     <div class="panel-group">
         {% for result in check_results %}
         <div id="state-heading" class="panel panel-default">
-            <div class="panel-heading container">
+            <div class="panel-heading container-fluid">
                 <div class="row">
                     <div class="col-md-2">Source:</div>
                     <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?source_type={{ result.source_type.pk }}&source_id={{ result.source_id }}">{{ result.source }}</a></div>
