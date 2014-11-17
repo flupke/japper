@@ -3,6 +3,8 @@ from vanilla import TemplateView, ListView, DetailView
 from .plugins import iter_monitoring_backends, iter_alert_backends
 from .models import State, CheckResult
 from .status import Status
+from .forms import StatesSearchForm
+from . import search
 
 
 class MonitoringSourcesList(TemplateView):
@@ -29,30 +31,29 @@ class StatesList(ListView):
     paginate_by = 100
     context_object_name = 'states'
     problems_only = False
+    form_class = StatesSearchForm
 
     def get_queryset(self):
         qs = super(StatesList, self).get_queryset()
         if self.problems_only:
             qs = qs.filter(status__in=Status.problems())
-        qs = self.apply_get_params_filters(qs)
+        qs = self.apply_search_filters(qs)
         return qs.order_by('host', 'name')
 
-    def apply_get_params_filters(self, qs):
-        params = self.request.GET.dict()
-        if 'status' in params:
-            params['status'] = Status.from_string(params['status'])
-        params.pop('page', None)
-        return qs.filter(**params)
+    def apply_search_filters(self, qs):
+        form = StatesSearchForm(self.request.GET)
+        if form.is_valid():
+            qs = search.filter(qs, form.cleaned_data['q'])
+        return qs
 
     def get_context_data(self, **kwargs):
-        queryset = self.get_queryset()
-        paginate_by = self.get_paginate_by()
-        page = self.paginate_queryset(queryset, paginate_by)
-        states_by_host = State.group_by_host(page.object_list)
+        states_by_host = State.group_by_host(self.object_list)
+        search_form = self.get_form(self.request.GET)
         return super(StatesList, self).get_context_data(
                 states_by_host=states_by_host,
                 Status=Status,
                 problems_only=self.problems_only,
+                search_form=search_form,
                 **kwargs)
 
 

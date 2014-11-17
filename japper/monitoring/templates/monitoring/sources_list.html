@@ -12,7 +12,7 @@
         <li>
             <a href="{{ source.get_absolute_url }}">{{ source }}</a>
             -
-            <a href="{% url 'monitoring_all_states' %}?source_type={{ source.get_content_type.pk }}&source_id={{ source.pk }}">states</a>
+            <a href="{% url 'monitoring_all_states' %}?q={{ source.get_search_token }}">states</a>
         </li>
         {% endfor %}
     </ul>

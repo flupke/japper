@@ -86,6 +86,13 @@ class MonitoringSourceBase(BackendInstanceBase):
         '''
         return False
 
+    def get_search_token(self):
+        '''
+        Return a token that can be used in search to target this monitoring
+        source.
+        '''
+        return u'source:%s:%s' % (self.__backend__.get_name(), self.name)
+
     class Meta:
         abstract = True
 

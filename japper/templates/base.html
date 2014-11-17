@@ -1,5 +1,6 @@
 {% load staticfiles %}
 {% load menu %}{% generate_menu %}
+{% load crispy_forms_tags %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -30,6 +31,13 @@
                 {% with menu=menus.main %}{% include 'bootstrap-navbar.html' %}{% endwith %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
+                <li>
+                    {% if search_form %}
+                        {% crispy search_form %}
+                    {% else %}
+                        {% crispy global_search_form %}
+                    {% endif %}
+                </li>
                 {% with menu=menus.auth %}{% include 'bootstrap-navbar.html' %}{% endwith %}
             </ul>
         </div>

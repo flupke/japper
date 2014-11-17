@@ -12,7 +12,7 @@
             <div class="panel-heading container-fluid">
                 <div class="row">
                     <div class="col-md-2">Source:</div>
-                    <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?source_type={{ result.source_type.pk }}&source_id={{ result.source_id }}">{{ result.source }}</a></div>
+                    <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q={{ result.source.get_search_token }}">{{ result.source }}</a></div>
                 </div>
                 <div class="row">
                     <div class="col-md-2">Host:</div>

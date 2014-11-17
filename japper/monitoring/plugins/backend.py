@@ -63,6 +63,22 @@ class Backend(object):
                     self.__class__.__name__)
         return self.create_instance_view
 
+    def get_model(self):
+        '''
+        Return the model class associated with this backend.
+        '''
+        if self.model is None:
+            raise ImproperlyConfigured('subclasses of %s '
+                    'must define the model property '
+                    'or reimplement get_model()' %
+                    self.__class__.__name__)
+        if isinstance(self.model, six.string_types):
+            model = get_model(self.model)
+        else:
+            model = self.model
+        model.__backend__ = self
+        return model
+
     def get_instances(self, active=None):
         '''
         Return a queryset containing model instances for this backend.
@@ -70,15 +86,7 @@ class Backend(object):
         The default is to return all instances. If *active* is given, only
         active or inactive instances are returned.
         '''
-        if self.model is None:
-            raise ImproperlyConfigured('subclasses of %s '
-                    'must define the model property '
-                    'or reimplement get_instances()' %
-                    self.__class__.__name__)
-        if isinstance(self.model, six.string_types):
-            model = get_model(self.model)
-        else:
-            model = self.model
+        model = self.get_model()
         qs = model.objects.all()
         if active is not None:
             qs = qs.filter(active=active)
