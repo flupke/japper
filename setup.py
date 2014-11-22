@@ -9,7 +9,9 @@ setup_requires = []
 if 'test' in sys.argv:
     setup_requires.append('pytest')
 
-dev_requires = []
+dev_requires = [
+    'cloudy-release-client>=0.6.1',
+]
 
 tests_require = [
     'pytest',
