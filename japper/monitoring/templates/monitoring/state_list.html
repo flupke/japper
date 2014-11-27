@@ -8,12 +8,15 @@
         {% else %}
         States
         {% endif %}
+        {% if states_by_host %}
         <button id="expand-states" class="btn pull-right btn-default"
                 data-toggle="tooltip" data-placement="bottom" title="Expand states">
             <span class="glyphicon glyphicon-align-left"></span>
         </button>
+        {% endif %}
     </h1>
 
+    {% if states_by_host %}
     <div class="panel-group">
         {% for host, states, status_counter, oldest_problem_date, might_be_starting, has_problems in states_by_host %}
         <div class="panel
@@ -71,6 +74,9 @@
         </div>
         {% endfor %}
     </div>
+    {% else %}
+    <p>No states</p>
+    {% endif %}
 
     {% if paginator.num_pages > 1 %}
     <ul class="pagination">
