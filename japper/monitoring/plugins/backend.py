@@ -1,4 +1,7 @@
+import functools
+
 from django.db.models.loading import get_model
+from django.db.models.signals import class_prepared
 import six
 
 from ..exceptions import ImproperlyConfigured
@@ -14,6 +17,11 @@ class Backend(object):
     urls_module = None
     create_instance_view = None
     model = None
+
+    def __init__(self):
+        callback = functools.partial(link_model_with_backend, self)
+        _class_prepared_callbacks[self] = callback
+        class_prepared.connect(callback)
 
     def _guess_package(self):
         return self.__class__.__module__.rpartition('.')[0]
@@ -76,7 +84,6 @@ class Backend(object):
             model = get_model(self.model)
         else:
             model = self.model
-        model.__backend__ = self
         return model
 
     def get_instances(self, active=None):
@@ -104,3 +111,18 @@ class AlertBackend(Backend):
     Base class for monitoring backends.
     '''
 
+
+# Used to keep refs to class_prepared callbacks and avoid them being garbage
+# collected
+_class_prepared_callbacks = {}
+
+
+def link_model_with_backend(backend, sender, **kwargs):
+    # We cannot use Backend.get_model() at this time
+    if isinstance(backend.model, six.string_types):
+        model_path = str(sender._meta)
+        connect = (backend.model.lower() == model_path)
+    else:
+        connect = (backend.model is sender)
+    if connect:
+        sender.__backend__ = backend
