@@ -1,7 +1,8 @@
 from django import forms
 from django.core.urlresolvers import reverse
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout
+from crispy_forms.layout import Layout, Field
+from crispy_forms.bootstrap import FieldWithButtons, StrictButton
 
 
 class StatesSearchForm(forms.Form):
@@ -14,8 +15,11 @@ class StatesSearchForm(forms.Form):
         self.helper.form_method = 'get'
         self.helper.form_action = reverse('monitoring_all_states')
         self.helper.form_class = 'navbar-form'
-        self.helper.field_template = 'bootstrap3/layout/inline_field.html'
+        self.helper.form_show_labels = False
+        self.helper.form_show_errors = False
         self.helper.layout = Layout(
-            'q',
-            Submit('submit', 'Go'),
+            FieldWithButtons(
+                Field('q', placeholder='Search', css_class='search'),
+            StrictButton('<span class="glyphicon glyphicon-search"></span>', type='submit', css_class='btn-default'),
+            )
         )

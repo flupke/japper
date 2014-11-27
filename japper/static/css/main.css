@@ -2,6 +2,10 @@ body {
     padding-top: 50px;
 }
 
+input.search {
+    width: 250px !important;
+}
+
 .cursor-pointer {
     cursor: pointer;
 }
