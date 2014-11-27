@@ -17,11 +17,11 @@
             </div>
             <div class="row">
                 <div class="col-md-2">Host:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?host={{ state.host }}">{{ state.host|default_if_none:'' }}</a></div>
+                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=host:{{ state.host }}">{{ state.host|default_if_none:'' }}</a></div>
             </div>
             <div class="row">
                 <div class="col-md-2">Name:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?name={{ state.name }}">{{ state.name }}</a></div>
+                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=name:{{ state.name }}">{{ state.name }}</a></div>
             </div>
             <div class="row">
                 <div class="col-md-2">First seen:</div>
@@ -33,7 +33,7 @@
             </div>
             <div class="row">
                 <div class="col-md-2">Status:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?status={{ state.status.name }}">{{ state.status.name|upper }}</a><F12></div>
+                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=status:{{ state.status.name }}">{{ state.status.name|upper }}</a><F12></div>
             </div>
             <div class="row">
                 <div class="col-md-2">Last status change:</div>
