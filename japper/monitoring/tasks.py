@@ -142,8 +142,12 @@ def cleanup():
     Cron job to remove expired check results and states.
     '''
     now = timezone.now()
+    states_date = now - settings.STATES_TTL
+    checks_date = now - settings.CHECK_RESULTS_TTL
     for backend in iter_monitoring_backends():
         for source in backend.get_instances():
             if source.has_dynamic_hosts():
                 State.objects.filter(sources=source,
-                        last_checked__lt=now - settings.STATES_TTL).delete()
+                        last_checked__lt=states_date).delete()
+            CheckResult.objects.filter(sources=source,
+                    timestamp__lt=checks_date).delete()
