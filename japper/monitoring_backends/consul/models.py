@@ -8,7 +8,7 @@ from distributedlock import distributedlock
 
 from japper.monitoring.plugins.models import MonitoringSourceBase
 from japper.monitoring.status import Status
-from .client import Client, parse_nagios_output
+from .client import ConsulClient, parse_nagios_output
 from . import settings
 
 
@@ -38,7 +38,7 @@ class MonitoringSource(MonitoringSourceBase):
 
     @cached_property
     def checks_state(self):
-        client = Client(self.endpoints.split())
+        client = ConsulClient(self.endpoints.split())
         return client.get('/v1/health/state/any')
 
     def get_check_results(self):

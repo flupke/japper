@@ -13,7 +13,7 @@ from .exceptions import NoServerFound
 logger = logging.getLogger(__name__)
 
 
-class Client(HttpClient):
+class ConsulClient(HttpClient):
     '''
     An interface to the Consul agent HTTP API
 
@@ -23,7 +23,7 @@ class Client(HttpClient):
     '''
 
     def __init__(self, servers, *args, **kwargs):
-        super(Client, self).__init__(*args, **kwargs)
+        super(ConsulClient, self).__init__(*args, **kwargs)
         # Separate local and remote servers
         if isinstance(servers, six.string_types):
             servers = [servers]
@@ -44,7 +44,7 @@ class Client(HttpClient):
         for base_url in servers:
             url = urljoin(base_url, path)
             try:
-                response = super(Client, self).request(method, url,
+                response = super(ConsulClient, self).request(method, url,
                         data=json.dumps(data), params=params)
                 break
             except requests.RequestException:
