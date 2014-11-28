@@ -31,6 +31,7 @@
                 {% with menu=menus.main %}{% include 'bootstrap-navbar.html' %}{% endwith %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
+                {% with menu=menus.auth %}{% include 'bootstrap-navbar.html' %}{% endwith %}
                 <li>
                     {% if search_form %}
                         {% crispy search_form %}
@@ -38,7 +39,6 @@
                         {% crispy global_search_form %}
                     {% endif %}
                 </li>
-                {% with menu=menus.auth %}{% include 'bootstrap-navbar.html' %}{% endwith %}
             </ul>
         </div>
     </div>
