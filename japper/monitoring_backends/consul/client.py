@@ -6,23 +6,24 @@ import random
 import requests
 import six
 
+from japper.utils import HttpClient
 from .exceptions import NoServerFound
 
 
 logger = logging.getLogger(__name__)
 
 
-class Client(object):
+class Client(HttpClient):
     '''
     An interface to the Consul agent HTTP API
 
-    *servers* is the consul HTTP API URL, it can be a string or a list of
-    strings, in which case requests will be load-balanced between the given
-    servers.
+    *servers* is the consul HTTP API base URL. It can be a string, or a list of
+    strings. In the latter case requests will be load-balanced between the
+    given servers.
     '''
 
-    def __init__(self, servers, timeout=3, max_retries=3):
-        self.timeout = timeout
+    def __init__(self, servers, *args, **kwargs):
+        super(Client, self).__init__(*args, **kwargs)
         # Separate local and remote servers
         if isinstance(servers, six.string_types):
             servers = [servers]
@@ -33,12 +34,6 @@ class Client(object):
                 self.local_servers.append(server)
             else:
                 self.remote_servers.append(server)
-        # Setup requests session
-        self.session = requests.Session()
-        self.session.mount('http://',
-                requests.adapters.HTTPAdapter(max_retries=max_retries))
-        self.session.mount('https://',
-                requests.adapters.HTTPAdapter(max_retries=max_retries))
 
     def request(self, method, path, data=None, params=None):
         local_servers = self.local_servers[:]
@@ -49,10 +44,8 @@ class Client(object):
         for base_url in servers:
             url = urljoin(base_url, path)
             try:
-                response = self.session.request(method, url,
-                        data=json.dumps(data), params=params,
-                        timeout=self.timeout)
-                response.raise_for_status()
+                response = super(Client, self).request(method, url,
+                        data=json.dumps(data), params=params)
                 break
             except requests.RequestException:
                 logger.warning('consul request failed on %s', url,

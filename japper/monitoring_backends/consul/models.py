@@ -39,7 +39,7 @@ class MonitoringSource(MonitoringSourceBase):
     @cached_property
     def checks_state(self):
         client = Client(self.endpoints.split())
-        return client.request('GET', '/v1/health/state/any')
+        return client.get('/v1/health/state/any')
 
     def get_check_results(self):
         ret = []
