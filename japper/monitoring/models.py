@@ -105,8 +105,8 @@ class State(models.Model):
     @classmethod
     def group_by_host(cls, states):
         '''
-        Build a list of (host, states, status_counter, oldest_problem_date)
-        tuples out of the *states* iterable.
+        Build a list of (host, states, status_counter, oldest_problem_date,
+        might_be_starting, has_problems) tuples out of the *states* iterable.
         '''
 
         def host_group_data(host, states):

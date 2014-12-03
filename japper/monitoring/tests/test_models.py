@@ -22,8 +22,8 @@ def test_state_group_by_host():
     ]
 
     assert State.group_by_host(states) == [
-        ('host1', [states[0], states[1]], Counter(passing=2), None),
-        ('host2', [states[2]], Counter(critical=1), None),
+        ('host1', [states[0], states[1]], Counter(passing=2), None, True, False),
+        ('host2', [states[2]], Counter(critical=1), None, True, True),
         ('host3', [states[3], states[4], states[5]], Counter(critical=1,
-            warning=1, passing=1), states[4].last_status_change),
+            warning=1, passing=1), states[4].last_status_change, True, True),
     ]
