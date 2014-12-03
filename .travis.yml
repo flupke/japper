@@ -21,7 +21,7 @@ before_script:
   - psql -c 'create database sentry;' -U postgres
 
 script:
-  - py.test --cov japper --cov-report term-missing
+  - make tests
 
 notifications:
   email:
