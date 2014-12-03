@@ -14,7 +14,7 @@ services:
   - redis-server
 
 install:
-  - "pip install -e .[$DB,tests]"
+  - "pip install -e .[$DEFAULT_DB,tests]"
 
 before_script:
   - mysql -e 'create database sentry;'
