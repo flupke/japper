@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 import datetime
 
+import os
 import environ
 
 from japper.monitoring.plugins import get_installed_apps
@@ -89,8 +90,19 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
+default_db_env = os.environ.get('DEFAULT_DB', 'postgres')
+if default_db_env == 'postgres':
+    default_db = 'postgres://localhost/japper'
+elif default_db_env == 'mysql':
+    default_db = 'mysql://localhost/japper'
+elif default_db_env == 'sqlite':
+    default_db = 'sqlite://:memory:'
+else:
+    raise ValueError('invald DEFAULT_DB environment variable: %s'
+            % default_db_env)
+
 DATABASES = {
-    'default': env.db(default='postgres://localhost/japper'),
+    'default': env.db(default=default_db),
 }
 
 # Internationalization
