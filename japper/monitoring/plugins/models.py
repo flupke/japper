@@ -93,6 +93,13 @@ class MonitoringSourceBase(BackendInstanceBase):
         '''
         return u'source:%s:%s' % (self.__backend__.get_name(), self.name)
 
+    def get_ui_entry_points(self):
+        '''
+        Return a list of (label, url) pairs, inserted in the UI to access this
+        backend's specific views.
+        '''
+        return []
+
     class Meta:
         abstract = True
 

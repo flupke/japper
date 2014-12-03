@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>{% if object.pk %}Edit{% else %}Create{% endif %} Graphite check</h1>
+    {% include 'include/submit_delete_form.html' with delete_view='graphite_delete_check' %}
+</div>
+{% endblock %}

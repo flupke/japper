@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>Graphite checks from {{ source }}</h1>
+    <ul>
+        {% for check in checks %}
+        <li><a href="{{ check.get_absolute_url }}">{{ check }}</a></li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'graphite_create_check' source_pk=source.pk %}" class="btn btn-primary">Create check</a>
+</div>
+{% endblock %}
