@@ -19,6 +19,8 @@ tests_require = [
     'pytest-django',
     'pytest-timeout',
     'unittest2',
+    'mock',
+    'httmock',
 ]
 
 install_requires = [
