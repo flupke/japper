@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
+<div class="page-header">
     <h1>
         {% if problems_only %}
         Problems
@@ -15,77 +15,77 @@
         </button>
         {% endif %}
     </h1>
-
-    {% if states_by_host %}
-    <div class="panel-group">
-        {% for host, states, status_counter, oldest_problem_date, might_be_starting, has_problems in states_by_host %}
-        <div class="panel
-                {% if status_counter.critical %}
-                panel-danger
-                {% elif status_counter.warning %}
-                panel-warning
-                {% elif status_counter.unknown %}
-                panel-default
-                {% else %}
-                panel-success
-                {% endif %}">
-            <div class="panel-heading cursor-pointer" data-toggle="collapse" data-target="#host_{{ forloop.counter }}_states">
-                {{ host }}
-                {% if oldest_problem_date %}
-                (since {{ oldest_problem_date|timesince }})
-                {% elif has_problems and might_be_starting %}
-                (host is probably starting up, no alerts sent)
-                {% endif %}
-                <div class="pull-right">
-                    {% if status_counter.unknown %}
-                    <span class="label label-default">{{ status_counter.unknown }}</span>
-                    {% endif %}
-                    {% if status_counter.critical %}
-                    <span class="label label-danger">{{ status_counter.critical }}</span>
-                    {% endif %}
-                    {% if status_counter.warning %}
-                    <span class="label label-warning">{{ status_counter.warning }}</span>
-                    {% endif %}
-                    {% if status_counter.passing %}
-                    <span class="label label-success">{{ status_counter.passing }}</span>
-                    {% endif %}
-                </div>
-            </div>
-            <ul id="host_{{ forloop.counter }}_states" class="list-group collapse states-list">
-                {% for state in states %}
-                <li class="list-group-item">
-                    <a href="{{ state.get_absolute_url }}">{{ state }}</a>
-
-                    {% if state.status == Status.critical %}
-                    <span class="label label-danger">
-                    {% elif state.status == Status.warning %}
-                    <span class="label label-warning">
-                    {% elif state.status == Status.passing %}
-                    <span class="label label-success">
-                    {% else %}
-                    <span class="label label-default">
-                    {% endif %}
-                    {{ state.get_status_display }}</span>
-
-                    {{ state.output|default_if_none:'' }}
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <p>No states</p>
-    {% endif %}
-
-    {% if paginator.num_pages > 1 %}
-    <ul class="pagination">
-        {% for page in paginator.page_range %}
-        <li{% if page_obj.number == page %} class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
-        {% endfor %}
-    </ul>
-    {% endif %}
 </div>
+
+{% if states_by_host %}
+<div class="panel-group">
+    {% for host, states, status_counter, oldest_problem_date, might_be_starting, has_problems in states_by_host %}
+    <div class="panel
+            {% if status_counter.critical %}
+            panel-danger
+            {% elif status_counter.warning %}
+            panel-warning
+            {% elif status_counter.unknown %}
+            panel-default
+            {% else %}
+            panel-success
+            {% endif %}">
+        <div class="panel-heading cursor-pointer" data-toggle="collapse" data-target="#host_{{ forloop.counter }}_states">
+            {{ host }}
+            {% if oldest_problem_date %}
+            (since {{ oldest_problem_date|timesince }})
+            {% elif has_problems and might_be_starting %}
+            (host is probably starting up, no alerts sent)
+            {% endif %}
+            <div class="pull-right">
+                {% if status_counter.unknown %}
+                <span class="label label-default">{{ status_counter.unknown }}</span>
+                {% endif %}
+                {% if status_counter.critical %}
+                <span class="label label-danger">{{ status_counter.critical }}</span>
+                {% endif %}
+                {% if status_counter.warning %}
+                <span class="label label-warning">{{ status_counter.warning }}</span>
+                {% endif %}
+                {% if status_counter.passing %}
+                <span class="label label-success">{{ status_counter.passing }}</span>
+                {% endif %}
+            </div>
+        </div>
+        <ul id="host_{{ forloop.counter }}_states" class="list-group collapse states-list">
+            {% for state in states %}
+            <li class="list-group-item">
+                <a href="{{ state.get_absolute_url }}">{{ state }}</a>
+
+                {% if state.status == Status.critical %}
+                <span class="label label-danger">
+                {% elif state.status == Status.warning %}
+                <span class="label label-warning">
+                {% elif state.status == Status.passing %}
+                <span class="label label-success">
+                {% else %}
+                <span class="label label-default">
+                {% endif %}
+                {{ state.get_status_display }}</span>
+
+                {{ state.output|default_if_none:'' }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p>No states</p>
+{% endif %}
+
+{% if paginator.num_pages > 1 %}
+<ul class="pagination">
+    {% for page in paginator.page_range %}
+    <li{% if page_obj.number == page %} class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}
 
 {% block page_scripts %}

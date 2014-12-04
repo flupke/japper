@@ -1,5 +1,7 @@
+from django.core.urlresolvers import reverse_lazy
 from vanilla import TemplateView, ListView, DetailView
 
+from japper.views import BreadcrumbsMixin
 from .plugins import iter_monitoring_backends, iter_alert_backends
 from .models import State, CheckResult
 from .status import Status
@@ -57,17 +59,32 @@ class StatesList(ListView):
                 **kwargs)
 
 
-class StateDetail(DetailView):
+class StateDetail(BreadcrumbsMixin, DetailView):
 
     model = State
     context_object_name = 'state'
 
+    def get_breadcrumbs(self):
+        state = self.get_object()
+        return [
+            ('States', reverse_lazy('monitoring_all_states')),
+            (state, None),
+        ]
 
-class StateHistory(DetailView):
+
+class StateHistory(BreadcrumbsMixin, DetailView):
 
     model = State
     paginate_by = 10
     template_name = 'monitoring/state_history.html'
+
+    def get_breadcrumbs(self):
+        state = self.get_object()
+        return [
+            ('States', reverse_lazy('monitoring_all_states')),
+            (state, state.get_absolute_url()),
+            ('History', None),
+        ]
 
     def get_context_data(self, **kwargs):
         state = self.get_object()

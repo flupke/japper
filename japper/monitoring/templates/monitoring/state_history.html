@@ -1,53 +1,51 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h1>
-        State history
-    </h1>
+<div class="page-header">
+    <h1>State history</h1>
+</div>
 
-    <div class="panel-group">
-        {% for result in check_results %}
-        <div id="state-heading" class="panel panel-default">
-            <div class="panel-heading container-fluid">
-                <div class="row">
-                    <div class="col-md-2">Source:</div>
-                    <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q={{ result.source.get_search_token }}">{{ result.source }}</a></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2">Host:</div>
-                    <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=host:{{ result.host }}">{{ result.host|default_if_none:'' }}</a></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2">Name:</div>
-                    <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=name:{{ result.name }}">{{ result.name }}</a></div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2">Date:</div>
-                    <div class="col-md-10">{{ result.timestamp }}</div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2">Status:</div>
-                    <div class="col-md-10">
-                        <a href="{% url 'monitoring_all_states' %}?q=status:{{ result.status.name }}">{{ result.status.name|upper }}</a>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2">Check output:</div>
-                    <div class="col-md-10">{{ result.output|default_if_none:'' }}</div>
+<div class="panel-group">
+    {% for result in check_results %}
+    <div id="state-heading" class="panel panel-default">
+        <div class="panel-heading container-fluid">
+            <div class="row">
+                <div class="col-md-2">Source:</div>
+                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q={{ result.source.get_search_token }}">{{ result.source }}</a></div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">Host:</div>
+                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=host:{{ result.host }}">{{ result.host|default_if_none:'' }}</a></div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">Name:</div>
+                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=name:{{ result.name }}">{{ result.name }}</a></div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">Date:</div>
+                <div class="col-md-10">{{ result.timestamp }}</div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">Status:</div>
+                <div class="col-md-10">
+                    <a href="{% url 'monitoring_all_states' %}?q=status:{{ result.status.name }}">{{ result.status.name|upper }}</a>
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-2">Check output:</div>
+                <div class="col-md-10">{{ result.output|default_if_none:'' }}</div>
+            </div>
         </div>
-        {% endfor %}
     </div>
-
-    {% if paginator.num_pages > 1 %}
-    <ul class="pagination">
-        {% for page in paginator.page_range %}
-        <li{% if page_obj.number == page %} class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
-        {% endfor %}
-    </ul>
-    {% endif %}
+    {% endfor %}
 </div>
+
+{% if paginator.num_pages > 1 %}
+<ul class="pagination">
+    {% for page in paginator.page_range %}
+    <li{% if page_obj.number == page %} class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
 {% endblock %}
 

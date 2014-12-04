@@ -44,7 +44,23 @@
     </div>
 </div>
 
-{% block content %}{% endblock %}
+<div class="container">
+    {% if breadcrumbs %}
+    <ol class="breadcrumb">
+        {% for label, url in breadcrumbs %}
+        <li{% if forloop.last %} class="active"{% endif %}>
+            {% if url %}
+            <a href="{{ url }}">{{ label }}</a>
+            {% else %}
+            {{ label }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ol>
+    {% endif %}
+    {% block content %}{% endblock %}
+</div>
+
 {% block page_scripts %}{% endblock %}
 
 </body>

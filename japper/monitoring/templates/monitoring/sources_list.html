@@ -2,25 +2,24 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<div class="container">
+<div class="page-header">
     <h1>Monitoring sources</h1>
-
-    {% for backend in backends %}
-    <h2>{{ backend.get_name|title }}</h2>
-    <ul>
-        {% for source in backend.get_instances %}
-        <li>
-            <a href="{{ source.get_absolute_url }}">{{ source }}</a>
-            -
-            <a href="{% url 'monitoring_all_states' %}?q={{ source.get_search_token }}">states</a>
-            {% for label, url in source.get_ui_entry_points %}
-            - <a href="{{ url }}">{{ label }}</a>
-            {% endfor %}
-        </li>
-        {% endfor %}
-    </ul>
-    <a href="{% url backend.get_create_instance_view %}" class="btn btn-primary">Create {{ backend.name }} source</a>
-    {% endfor %}
-
 </div>
+
+{% for backend in backends %}
+<h2>{{ backend.get_name|title }}</h2>
+<ul>
+    {% for source in backend.get_instances %}
+    <li>
+        <a href="{{ source.get_absolute_url }}">{{ source }}</a>
+        -
+        <a href="{% url 'monitoring_all_states' %}?q={{ source.get_search_token }}">states</a>
+        {% for label, url in source.get_ui_entry_points %}
+        - <a href="{{ url }}">{{ label }}</a>
+        {% endfor %}
+    </li>
+    {% endfor %}
+</ul>
+<a href="{% url backend.get_create_instance_view %}" class="btn btn-primary">Create {{ backend.name }} source</a>
+{% endfor %}
 {% endblock %}

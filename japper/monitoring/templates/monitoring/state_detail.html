@@ -6,53 +6,54 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
+<div class="page-header">
     <h1>State detail</h1>
-    <h3>{{ state.status.name|upper }}: {{ state.full_path }}</h3>
-    <div id="state-heading" class="panel panel-default">
-        <div class="panel-heading container-fluid">
-            <div class="row">
-                <div class="col-md-2">Source:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q={{ state.source.get_search_token }}">{{ state.source }}</a></div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">Host:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=host:{{ state.host }}">{{ state.host|default_if_none:'' }}</a></div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">Name:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=name:{{ state.name }}">{{ state.name }}</a></div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">First seen:</div>
-                <div class="col-md-10">{{ state.first_seen }} ({{ state.first_seen|timesince }} ago)</div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">Last checked:</div>
-                <div class="col-md-10">{{ state.last_checked }} ({{ state.last_checked|timesince }} ago)</div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">Status:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=status:{{ state.status.name }}">{{ state.status.name|upper }}</a><F12></div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">Last status change:</div>
-                <div class="col-md-10">
-                    {% if state.last_status_change %}
-                    {{ state.last_status_change }} ({{ state.last_status_change|timesince }} ago)
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-2">Check output:</div>
-                <div class="col-md-10">{{ state.output|default_if_none:'' }}</div>
-            </div>
-        </div>
-        <a href="{% url 'monitoring_state_history' state.pk %}" id="state-history-link" class="btn btn-default">History</a>
-    </div>
 </div>
 
-<div id="state-metrics" class="container"></div>
+<h3>{{ state.status.name|upper }}: {{ state.full_path }}</h3>
+<div id="state-heading" class="panel panel-default">
+    <div class="panel-heading container-fluid">
+        <div class="row">
+            <div class="col-md-2">Source:</div>
+            <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q={{ state.source.get_search_token }}">{{ state.source }}</a></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">Host:</div>
+            <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=host:{{ state.host }}">{{ state.host|default_if_none:'' }}</a></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">Name:</div>
+            <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=name:{{ state.name }}">{{ state.name }}</a></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">First seen:</div>
+            <div class="col-md-10">{{ state.first_seen }} ({{ state.first_seen|timesince }} ago)</div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">Last checked:</div>
+            <div class="col-md-10">{{ state.last_checked }} ({{ state.last_checked|timesince }} ago)</div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">Status:</div>
+            <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=status:{{ state.status.name }}">{{ state.status.name|upper }}</a><F12></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">Last status change:</div>
+            <div class="col-md-10">
+                {% if state.last_status_change %}
+                {{ state.last_status_change }} ({{ state.last_status_change|timesince }} ago)
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">Check output:</div>
+            <div class="col-md-10">{{ state.output|default_if_none:'' }}</div>
+        </div>
+    </div>
+    <a href="{% url 'monitoring_state_history' state.pk %}" id="state-history-link" class="btn btn-default">History</a>
+</div>
+
+<div id="state-metrics"></div>
 {% endblock %}
 
 {% block page_scripts %}

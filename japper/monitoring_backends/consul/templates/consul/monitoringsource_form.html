@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <h1>{% if object.pk %}Edit{% else %}Create{% endif %} consul monitoring source</h1>
-    {% include 'include/submit_delete_form.html' with delete_view='consul_delete_monitoring_source' %}
-</div>
+<h1>{% if object.pk %}Edit{% else %}Create{% endif %} consul monitoring source</h1>
+{% include 'include/submit_delete_form.html' with delete_view='consul_delete_monitoring_source' %}
 {% endblock %}
