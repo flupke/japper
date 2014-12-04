@@ -4,6 +4,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from celery import shared_task
 from celery.utils.log import get_task_logger
+from raven.contrib.django.raven_compat.models import client as raven_client
 
 from .models import CheckResult, State
 from .status import Status
@@ -24,6 +25,7 @@ def fetch_check_results():
             try:
                 fetch_source_check_results(source)
             except Exception as exc:
+                raven_client.captureException()
                 status = Status.critical
                 check_output = unicode(exc)
             else:

@@ -2,11 +2,12 @@ import operator
 
 from django.db import models
 from django.core.urlresolvers import reverse
+from raven.contrib.django.raven_compat.models import client as raven_client
 
 from japper.monitoring.plugins.models import MonitoringSourceBase
 from japper.monitoring.status import Status
 from .client import GraphiteClient, average
-from .exceptions import InvalidDataFormat
+from .exceptions import InvalidDataFormat, EmptyData
 
 
 class MonitoringSource(MonitoringSourceBase):
@@ -68,9 +69,9 @@ class Check(models.Model):
     target = models.CharField(max_length=4096)
     metric_aggregator = models.SmallIntegerField(choices=AGGREGATORS, default=0)
     host = models.CharField(max_length=255, null=True, blank=True)
-    warning_operator = models.SmallIntegerField(choices=OPERATORS)
+    warning_operator = models.SmallIntegerField(choices=OPERATORS, default=0)
     warning_value = models.FloatField()
-    critical_operator = models.SmallIntegerField(choices=OPERATORS)
+    critical_operator = models.SmallIntegerField(choices=OPERATORS, default=0)
     critical_value = models.FloatField()
 
     def run(self, client):
@@ -78,7 +79,7 @@ class Check(models.Model):
             agg_func = self.AGGREGATOR_FUNCS[self.metric_aggregator]
             try:
                 value = client.get_metric(self.target, aggregator=agg_func)
-            except InvalidDataFormat as exc:
+            except (InvalidDataFormat, EmptyData) as exc:
                 return self.build_check_dict(Status.unknown, str(exc))
             warning_func = self.OPERATOR_FUNCS[self.warning_operator]
             critical_func = self.OPERATOR_FUNCS[self.critical_operator]
@@ -92,6 +93,7 @@ class Check(models.Model):
                     '%s %s' % (self.name, status.name),
                     metrics={self.name: value})
         except Exception as exc:
+            raven_client.captureException()
             return self.build_check_dict(Status.unknown,
                 'unexpected error: %s' % exc)
 
