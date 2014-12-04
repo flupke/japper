@@ -75,9 +75,13 @@ class Check(models.Model):
 
     name = models.CharField(max_length=255)
     enabled = models.BooleanField(default=True)
-    target = models.CharField(max_length=4096)
+    target = models.CharField(max_length=4096, help_text='The graphite path '
+            'to evaluate, you may use functions here. It must ouptut '
+            'a single metric.')
     metric_aggregator = models.SmallIntegerField(choices=AGGREGATORS,
-            default=AVERAGE)
+            default=AVERAGE, help_text='The last 1 minute of values from '
+            'target are aggregated using this function. The result is then '
+            'compared to the threshold values below.')
     host = models.CharField(max_length=255, null=True, blank=True)
     warning_operator = models.SmallIntegerField(choices=OPERATORS, default=GE)
     warning_value = models.FloatField()
