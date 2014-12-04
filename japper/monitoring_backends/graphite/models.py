@@ -30,6 +30,10 @@ class MonitoringSource(MonitoringSourceBase):
             ('checks', reverse('graphite_checks', kwargs={'pk': self.pk})),
         ]
 
+    def has_dynamic_hosts(self):
+        # The notion of hosts in graphite backend is for grouping only
+        return True
+
 
 class Check(models.Model):
 
