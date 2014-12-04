@@ -38,13 +38,19 @@ class MonitoringSource(MonitoringSourceBase):
 
 class Check(models.Model):
 
+    LT = 0
+    LE = 1
+    EQ = 2
+    NE = 3
+    GE = 4
+    GT = 5
     OPERATORS = [
-        (0, '<'),
-        (1, '<='),
-        (2, '=='),
-        (3, '!='),
-        (4, '>='),
-        (5, '>'),
+        (LT, '<'),
+        (LE, '<='),
+        (EQ, '=='),
+        (NE, '!='),
+        (GE, '>='),
+        (GT, '>'),
     ]
     OPERATOR_FUNCS = [
         operator.lt,
@@ -54,10 +60,13 @@ class Check(models.Model):
         operator.ge,
         operator.gt,
     ]
+    AVERAGE = 0
+    MAX = 1
+    MIN = 2
     AGGREGATORS = [
-        (0, 'average'),
-        (1, 'max'),
-        (2, 'min'),
+        (AVERAGE, 'average'),
+        (MAX, 'max'),
+        (MIN, 'min'),
     ]
     AGGREGATOR_FUNCS = [average, max, min]
 
@@ -67,11 +76,12 @@ class Check(models.Model):
     name = models.CharField(max_length=255)
     enabled = models.BooleanField(default=True)
     target = models.CharField(max_length=4096)
-    metric_aggregator = models.SmallIntegerField(choices=AGGREGATORS, default=0)
+    metric_aggregator = models.SmallIntegerField(choices=AGGREGATORS,
+            default=AVERAGE)
     host = models.CharField(max_length=255, null=True, blank=True)
-    warning_operator = models.SmallIntegerField(choices=OPERATORS, default=0)
+    warning_operator = models.SmallIntegerField(choices=OPERATORS, default=GE)
     warning_value = models.FloatField()
-    critical_operator = models.SmallIntegerField(choices=OPERATORS, default=0)
+    critical_operator = models.SmallIntegerField(choices=OPERATORS, default=GE)
     critical_value = models.FloatField()
 
     def run(self, client):
