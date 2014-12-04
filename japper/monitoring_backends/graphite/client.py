@@ -1,7 +1,7 @@
 from urlparse import urljoin
 
 from japper.utils import HttpClient
-from .exceptions import InvalidDataFormat
+from .exceptions import InvalidDataFormat, EmptyData
 
 
 def average(values):
@@ -15,6 +15,16 @@ class GraphiteClient(HttpClient):
         self.endpoint = endpoint
 
     def get_metric(self, target, from_='-1minutes', aggregator=average):
+        '''
+        Get the current value of a metric, by aggregating values from Graphite
+        over an interval.
+
+        Values returned by *target* over the period *from_* are aggregated
+        using the *aggregator* function.
+
+        Returns the resulting floating point value, or raise an
+        :class:`InvalidDataFormat` exception if the retured data is invalid.
+        '''
         url = urljoin(self.endpoint, '/render')
         response = self.get(url, params={
             'target': target,
@@ -35,7 +45,9 @@ class GraphiteClient(HttpClient):
                     'at item 0 but got a %s instead' % type(data[0]))
 
         # Extract values
-        values = [e[0] for e in data[0]['datapoints']]
+        values = [e[0] for e in data[0]['datapoints'] if e[0] is not None]
+        if not values:
+            raise EmptyData('got empty data for "%s"' % target)
 
         # Aggregate values
         return aggregator(values)

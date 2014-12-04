@@ -6,3 +6,6 @@ class GraphiteException(JapperMonitoringException):
 
 class InvalidDataFormat(GraphiteException):
     pass
+
+class EmptyData(GraphiteException):
+    pass

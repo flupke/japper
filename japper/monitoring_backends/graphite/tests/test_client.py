@@ -4,7 +4,7 @@ import pytest
 from httmock import all_requests, HTTMock
 
 from ..client import GraphiteClient
-from ..exceptions import InvalidDataFormat
+from ..exceptions import InvalidDataFormat, EmptyData
 
 
 SINGLE_METRIC_DATA = [{
@@ -16,6 +16,22 @@ SINGLE_METRIC_DATA = [{
     'target': 'foo'
 }]
 MULTI_METRIC_DATA = [SINGLE_METRIC_DATA[0], SINGLE_METRIC_DATA[0]]
+METRIC_WITH_NULL_DATA = [{
+    'datapoints': [
+        [524.9439252336449, 1417629030],
+        [None, 1417629040],
+        [581.9166666666666, 1417629050],
+    ],
+    'target': 'foo'
+}]
+METRIC_WITH_ONLY_NULLS_DATA = [{
+    'datapoints': [
+        [None, 1417629030],
+        [None, 1417629040],
+        [None, 1417629050],
+    ],
+    'target': 'foo'
+}]
 
 
 def build_json_response(data):
@@ -31,8 +47,18 @@ def build_json_response(data):
 def test_data_format_check():
     client = GraphiteClient('https://graphite.com')
 
+    # Invalid type response
+    with HTTMock(build_json_response({})):
+        with pytest.raises(InvalidDataFormat):
+            client.get_metric('metric.path')
+
     # Empty response
     with HTTMock(build_json_response([])):
+        with pytest.raises(InvalidDataFormat):
+            client.get_metric('metric.path')
+
+    # Response containing invalid data
+    with HTTMock(build_json_response([[]])):
         with pytest.raises(InvalidDataFormat):
             client.get_metric('metric.path')
 
@@ -41,10 +67,24 @@ def test_data_format_check():
         with pytest.raises(InvalidDataFormat):
             client.get_metric('metric.path')
 
+    # Metric with only nulls
+    with HTTMock(build_json_response(METRIC_WITH_ONLY_NULLS_DATA)):
+        with pytest.raises(EmptyData):
+            client.get_metric('metric.path')
+
+    # Empty metric
+    with HTTMock(build_json_response([{'datapoints': [], 'target': 'foo'}])):
+        with pytest.raises(EmptyData):
+            client.get_metric('metric.path')
+
 
 def test_aggregators():
     client = GraphiteClient('https://graphite.com')
     with HTTMock(build_json_response(SINGLE_METRIC_DATA)):
         assert client.get_metric('metric.path') == 577.5714168122989
         assert client.get_metric('metric.path', aggregator=max) == 625.8536585365854
+        assert client.get_metric('metric.path', aggregator=min) == 524.9439252336449
+    with HTTMock(build_json_response(METRIC_WITH_NULL_DATA)):
+        assert client.get_metric('metric.path') == 553.4302959501558
+        assert client.get_metric('metric.path', aggregator=max) == 581.9166666666666
         assert client.get_metric('metric.path', aggregator=min) == 524.9439252336449
