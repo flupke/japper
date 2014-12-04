@@ -15,7 +15,7 @@ dev_requires = [
 
 tests_require = [
     'pytest',
-    'pytest-cov',
+    'pytest-cov>=1.8.1',
     'pytest-django',
     'pytest-timeout',
     'unittest2',
