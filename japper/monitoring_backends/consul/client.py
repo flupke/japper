@@ -35,7 +35,8 @@ class ConsulClient(HttpClient):
             else:
                 self.remote_servers.append(server)
 
-    def request(self, method, path, data=None, params=None):
+    def request(self, method, path, data=None, params=None,
+            raise_for_status=True):
         local_servers = self.local_servers[:]
         remote_servers = self.remote_servers[:]
         random.shuffle(local_servers)
