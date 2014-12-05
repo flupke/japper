@@ -1,7 +1,9 @@
 import shlex
+import urllib
 
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 
 from .status import Status
@@ -107,3 +109,24 @@ register_tag('host', filter_by_host)
 register_tag('status', filter_by_status)
 register_tag('source', filter_by_source)
 register_tag(None, filter_by_any)
+
+
+def build_search_url(name=None, host=None, status=None, source=None, text=None):
+    '''
+    Build a search query for the given parameters.
+    '''
+    url = reverse('monitoring_all_states')
+    query = []
+    if name is not None:
+        query.append('name:%s' % name)
+    if host is not None:
+        query.append('host:%s' % host)
+    if status is not None:
+        query.append('status:%s' % status.name)
+    if source is not None:
+        query.append(source.get_search_token())
+    if text is not None:
+        query.append(text)
+    if query:
+        url += '?q=%s' % urllib.quote_plus(' '.join(query))
+    return url

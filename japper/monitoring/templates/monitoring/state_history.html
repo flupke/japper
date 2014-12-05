@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load japper %}
 
 {% block content %}
 <div class="page-header">
@@ -11,15 +12,15 @@
         <div class="panel-heading container-fluid">
             <div class="row">
                 <div class="col-md-2">Source:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q={{ result.source.get_search_token }}">{{ result.source }}</a></div>
+                <div class="col-md-10"><a href="{% search source=result.source %}">{{ result.source }}</a></div>
             </div>
             <div class="row">
                 <div class="col-md-2">Host:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=host:{{ result.host }}">{{ result.host|default_if_none:'' }}</a></div>
+                <div class="col-md-10"><a href="{% search host=result.host %}">{{ result.host|default_if_none:'' }}</a></div>
             </div>
             <div class="row">
                 <div class="col-md-2">Name:</div>
-                <div class="col-md-10"><a href="{% url 'monitoring_all_states' %}?q=name:{{ result.name }}">{{ result.name }}</a></div>
+                <div class="col-md-10"><a href="{% search name=result.name %}">{{ result.name }}</a></div>
             </div>
             <div class="row">
                 <div class="col-md-2">Date:</div>
@@ -28,7 +29,7 @@
             <div class="row">
                 <div class="col-md-2">Status:</div>
                 <div class="col-md-10">
-                    <a href="{% url 'monitoring_all_states' %}?q=status:{{ result.status.name }}">{{ result.status.name|upper }}</a>
+                    <a href="{% search status=result.status %}">{{ result.status.name|upper }}</a>
                 </div>
             </div>
             <div class="row">
