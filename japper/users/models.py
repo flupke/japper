@@ -12,6 +12,7 @@ class UserProfile(models.Model):
     user = AutoOneToOneField(User, related_name='profile')
     mobile = models.CharField(max_length=255, blank=True)
     subscriptions = models.TextField(default='')
+    slack_nickname = models.CharField(max_length=255, blank=True, null=True)
 
 
 @receiver(models.signals.pre_delete)

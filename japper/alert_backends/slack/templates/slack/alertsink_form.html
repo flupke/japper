@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if object.pk %}Edit{% else %}Create{% endif %} slack alert sink</h1>
+</div>
+{% include 'include/submit_delete_form.html' with delete_view='slack_delete_alert_sink' %}
+{% endblock %}

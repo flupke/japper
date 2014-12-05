@@ -99,6 +99,7 @@ setup(
         ],
         'japper.alert_backends': [
             'django_email = japper.alert_backends.django_email.plugin:create_backend',
+            'slack = japper.alert_backends.slack.plugin:create_backend',
         ],
     },
     classifiers=[
