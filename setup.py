@@ -37,7 +37,7 @@ install_requires = [
     'django-simple-menu==1.0.9',
     'django-annoying==0.8.0',
     'humanfriendly==1.9.6',
-    'raven==5.1.1',
+    'raven==4.2.3',
     'boto==2.34.0',
     'django-redis==3.7.2',
     'django-distributedlock==0.2.2',
