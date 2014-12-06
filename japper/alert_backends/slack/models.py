@@ -67,7 +67,11 @@ class AlertSink(AlertSinkBase):
                 build_absolute_uri(build_search_url(name=new_state.name)),
                 new_state.name)
 
-        attachment_text = '''
+        if new_state.output:
+            attachment_text = 'Output: %s' % new_state.output
+        else:
+            attachment_text = ''
+        attachment_text += '''
 Source: {source}
 Host: {host}
 Name: {name}'''.format(source=source, host=host, name=name)
