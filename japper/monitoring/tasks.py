@@ -2,6 +2,7 @@ import copy
 
 from django.utils import timezone
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from celery import shared_task
 from celery.utils.log import get_task_logger
 from raven.contrib.django.raven_compat.models import client as raven_client
@@ -45,7 +46,9 @@ def fetch_check_results():
             check_obj.save()
 
             # Analyze check results time series and update states
-            for state in State.objects.filter(sources=source):
+            source_type = ContentType.objects.get_for_model(source)
+            for state in State.objects.filter(source_type=source_type,
+                    source_id=source.pk):
                 update_monitoring_states.delay(state.pk)
 
 
@@ -66,7 +69,8 @@ def fetch_source_check_results(source):
             check_obj.save()
 
     # Delete removed hosts states
-    State.objects.filter(sources=source,
+    source_type = ContentType.objects.get_for_model(source)
+    State.objects.filter(source_type=source_type, source_id=source.pk,
             host__in=removed_hosts).delete()
 
 
@@ -148,8 +152,10 @@ def cleanup():
     checks_date = now - settings.CHECK_RESULTS_TTL
     for backend in iter_monitoring_backends():
         for source in backend.get_instances():
+            source_type = ContentType.objects.get_for_model(source)
             if source.has_dynamic_hosts():
-                State.objects.filter(sources=source,
+                State.objects.filter(source_type=source_type,
+                        source_id=source.pk,
                         last_checked__lt=states_date).delete()
-            CheckResult.objects.filter(sources=source,
-                    timestamp__lt=checks_date).delete()
+            CheckResult.objects.filter(source_type=source_type,
+                    source_id=source.pk, timestamp__lt=checks_date).delete()

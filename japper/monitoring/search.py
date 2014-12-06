@@ -71,7 +71,7 @@ def filter_by_source(value):
     Filter by monitoring source.
 
     *value* may be a simple string, in which case all backend instances with
-    this name are matched, or a "backend_name/instance_name" string to target a
+    this name are matched, or a "backend_name:instance_name" string to target a
     single backend.
     '''
     if ':' in value:
