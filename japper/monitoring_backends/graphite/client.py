@@ -1,7 +1,11 @@
 from urlparse import urljoin
+import logging
 
 from japper.utils import HttpClient
 from .exceptions import InvalidDataFormat, EmptyData
+
+
+logger = logging.getLogger(__name__)
 
 
 def average(values):
@@ -39,7 +43,9 @@ class GraphiteClient(HttpClient):
             raise InvalidDataFormat(err_prefix +
                     'expected a list but got a %s instead' % type(data))
         if len(data) != 1:
-            raise InvalidDataFormat(err_prefix + 'multiple metrics returned')
+            err_message = err_prefix + 'multiple metrics returned'
+            logger.warning(err_message + ('\n%s' % data))
+            raise InvalidDataFormat(err_message)
         if not isinstance(data[0], dict):
             raise InvalidDataFormat(err_prefix + 'expected a dict '
                     'at item 0 but got a %s instead' % type(data[0]))
