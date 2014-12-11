@@ -45,7 +45,7 @@ class CheckResult(models.Model):
     name = models.CharField(max_length=255)
     host = models.CharField(max_length=255, null=True)
     status = EnumIntegerField(Status)
-    output = models.CharField(max_length=255, null=True)
+    output = models.CharField(max_length=4095, null=True)
     metrics = JSONField(null=True)
 
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -91,7 +91,7 @@ class State(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     host = models.CharField(max_length=255, db_index=True, null=True)
     status = EnumIntegerField(Status, db_index=True)
-    output = models.CharField(max_length=255, null=True)
+    output = models.CharField(max_length=4095, null=True)
     metrics = JSONField(null=True)
 
     first_seen = models.DateTimeField(auto_now_add=True)
