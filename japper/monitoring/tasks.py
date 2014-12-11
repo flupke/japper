@@ -7,6 +7,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from raven.contrib.django.raven_compat.models import client as raven_client
 
+from japper.utils import report_to_sentry
 from .models import CheckResult, State
 from .status import Status
 from .plugins import iter_monitoring_backends, iter_alert_backends
@@ -17,6 +18,7 @@ logger = get_task_logger(__name__)
 
 
 @shared_task
+@report_to_sentry
 def fetch_check_results():
     '''
     Cron job fetching check results from monitoring backends.
@@ -75,6 +77,7 @@ def fetch_source_check_results(source):
 
 
 @shared_task
+@report_to_sentry
 def update_monitoring_states(state_pk):
     '''
     Subtask called from :func:`fetch_check_results`, looks back at check
@@ -128,6 +131,7 @@ def update_monitoring_states(state_pk):
 
 
 @shared_task
+@report_to_sentry
 def send_alerts(prev_state, new_state):
     '''
     Send alert to all sinks and all users subscribed to them.
@@ -143,6 +147,7 @@ def send_alerts(prev_state, new_state):
 
 
 @shared_task
+@report_to_sentry
 def cleanup():
     '''
     Cron job to remove expired check results and states.

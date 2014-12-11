@@ -1,6 +1,8 @@
 import urlparse
+import functools
 
 import requests
+from raven.contrib.django.raven_compat.models import client as raven_client
 
 from django.conf import settings
 
@@ -42,3 +44,19 @@ class HttpClient(object):
     def post(self, url, data=None, params=None, raise_for_status=True):
         return self.request('POST', url, data=data, params=params,
                 raise_for_status=raise_for_status)
+
+
+def report_to_sentry(func):
+    '''
+    A decorator to report errors to sentry.
+    '''
+
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception:
+            raven_client.captureException()
+            raise
+
+    return wrapper
