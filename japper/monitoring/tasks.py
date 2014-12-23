@@ -127,9 +127,15 @@ def update_monitoring_states(state_pk):
                 state.initial_bad_status_reported = True
                 send_alerts.delay(None, state)
 
-    # Always update output, metrics and last_checked
-    state.output = last_check_result.output
-    state.metrics = last_check_result.metrics
+    # Update state output and metrics if last check result and current state have
+    # the same status. This avoids confusion during an alert (we show the
+    # output of the check result when the alert started), and still show
+    # up-to-date information when the state is stable.
+    if last_check_result.status == state.status:
+        state.output = last_check_result.output
+        state.metrics = last_check_result.metrics
+
+    # Always update last_checked timestamp
     state.last_checked = last_check_result.timestamp
     state.save()
 
