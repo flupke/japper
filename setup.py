@@ -39,7 +39,7 @@ install_requires = [
     'humanfriendly==1.9.6',
     'raven==4.2.3',
     'boto==2.34.0',
-    'django-redis==3.7.2',
+    'django-redis==3.8.0',
     'python-redis-lock==0.1.2',
 ]
 
