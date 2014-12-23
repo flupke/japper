@@ -106,8 +106,6 @@ def update_monitoring_states(state_pk):
         if statuses.count(statuses[0]) == len(statuses):
             if state.status != statuses[0]:
                 state.status = statuses[0]
-                state.output = last_check_result.output
-                state.metrics = last_check_result.metrics
                 state.last_status_change = last_check_result.timestamp
                 if (not state.initial_bad_status_reported and
                         not state.status.is_problem()):
@@ -129,7 +127,9 @@ def update_monitoring_states(state_pk):
                 state.initial_bad_status_reported = True
                 send_alerts.delay(None, state)
 
-    # Always update last_checked timestamp
+    # Always update output, metrics and last_checked
+    state.output = last_check_result.output
+    state.metrics = last_check_result.metrics
     state.last_checked = last_check_result.timestamp
     state.save()
 
