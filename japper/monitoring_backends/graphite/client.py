@@ -42,9 +42,11 @@ class GraphiteClient(HttpClient):
         if not isinstance(data, list):
             raise InvalidDataFormat(err_prefix +
                     'expected a list but got a %s instead' % type(data))
-        if len(data) != 1:
+        if not len(data):
+            err_message = err_prefix + 'null data returned'
+            raise InvalidDataFormat(err_message)
+        if len(data) > 1:
             err_message = err_prefix + 'multiple metrics returned'
-            logger.warning(err_message + ('\n%s' % data))
             raise InvalidDataFormat(err_message)
         if not isinstance(data[0], dict):
             raise InvalidDataFormat(err_prefix + 'expected a dict '
