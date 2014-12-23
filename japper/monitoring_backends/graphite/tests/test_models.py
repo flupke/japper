@@ -28,7 +28,7 @@ def test_check_run():
             'host': 'foo.com',
             'status': Status.critical,
             'metrics': {'check': 1},
-            'output': 'check critical',
+            'output': 'critical - check > 0 (1.0)',
         }
 
     check = Check(target='metric.path', host='foo.com', name='check',
@@ -40,7 +40,7 @@ def test_check_run():
             'host': 'foo.com',
             'status': Status.warning,
             'metrics': {'check': 1},
-            'output': 'check warning',
+            'output': 'warning - check > 0 (1.0)',
         }
 
     check = Check(target='metric.path', host='foo.com', name='check',
@@ -52,7 +52,7 @@ def test_check_run():
             'host': 'foo.com',
             'status': Status.passing,
             'metrics': {'check': 1},
-            'output': 'check passing',
+            'output': 'passing - check = 1.0',
         }
 
     client = mock.Mock(spec=GraphiteClient)
