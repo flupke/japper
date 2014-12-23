@@ -92,7 +92,7 @@ class MonitoringSource(MonitoringSourceBase):
         if self.search_ec2_public_dns:
             # We don't want all celery workers to go crazy and update the cache
             # at the same time, so we use a distributed lock here
-            with cache.lock('consul_search_ec2_public_dns',
+            with cache.lock('japper:consul:search_ec2_public_dns',
                     expire=settings.EC2_DNS_LOCK_EXPIRE):
                 # Look in cache
                 host_cache_key = self.ec2_cache_key(host)
