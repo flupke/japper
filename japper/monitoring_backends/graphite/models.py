@@ -69,6 +69,8 @@ class Check(models.Model):
         (MIN, 'min'),
     ]
     AGGREGATOR_FUNCS = [average, max, min]
+    PROBLEM_FMT = '{status} - {metric} {operator} {threshold_value} ({value})'
+    PASSING_FMT = '{status} - {metric} {operator} {value}'
 
     source = models.ForeignKey(MonitoringSource, related_name='checks',
             editable=False)
@@ -99,12 +101,23 @@ class Check(models.Model):
             critical_func = self.OPERATOR_FUNCS[self.critical_operator]
             if critical_func(value, self.critical_value):
                 status = Status.critical
+                operator = self.get_critical_operator_display()
+                threshold_value = self.critical_value
+                output_fmt = self.PROBLEM_FMT
             elif warning_func(value, self.warning_value):
                 status = Status.warning
+                operator = self.get_warning_operator_display()
+                threshold_value = self.warning_value
+                output_fmt = self.PROBLEM_FMT
             else:
                 status = Status.passing
-            return self.build_check_dict(status,
-                    '%s %s' % (self.name, status.name),
+                operator = '='
+                threshold_value = None
+                output_fmt = self.PASSING_FMT
+            output = output_fmt.format(status=status.name, metric=self.name,
+                    operator=operator, threshold_value=threshold_value,
+                    value=value)
+            return self.build_check_dict(status, output,
                     metrics={self.name: value})
         except Exception as exc:
             raven_client.captureException()
