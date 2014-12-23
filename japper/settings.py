@@ -24,7 +24,8 @@ env = environ.Env(
     BROKER_URL=(str, 'amqp://guest:guest@localhost:5672//'),
     RAVEN_DSN=(str, None),
     SITE_URL=(str, 'http://127.0.0.1:8000/'),
-    CACHE_URL=(environ.Env.cache_url, 'rediscache://127.0.0.1:6379:7'),
+    REDIS_LOCATION=(str, '127.0.0.1:6379'),
+    REDIS_DB=(int, 7),
 )
 
 # Quick-start development settings - unsuitable for production
@@ -166,8 +167,12 @@ RAVEN_CONFIG = {
 
 # Cache settings
 
-CACHES = {'default': env.cache()}
-
-# Distributed lock settings
-
-DISTRIBUTEDLOCK_CLIENT = "cache"
+CACHES = {
+    'default': {
+        'BACKEND': 'redis_lock.django_cache.RedisCache',
+        'LOCATION': env('REDIS_LOCATION'),
+        'OPTIONS': {
+            'DB': env('REDIS_DB')
+        }
+    }
+}

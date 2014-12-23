@@ -4,7 +4,6 @@ from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property
 from boto import ec2
-from distributedlock import distributedlock
 
 from japper.monitoring.plugins.models import MonitoringSourceBase
 from japper.monitoring.status import Status
@@ -91,37 +90,26 @@ class MonitoringSource(MonitoringSourceBase):
 
     def resolve_host(self, host):
         if self.search_ec2_public_dns:
-
             # We don't want all celery workers to go crazy and update the cache
-            # together, so we use a distributed lock here
-            with distributedlock('consul_search_ec2_public_dns'):
-                # Search in cache
+            # at the same time, so we use a distributed lock here
+            with cache.lock('consul_search_ec2_public_dns',
+                    expire=settings.EC2_DNS_LOCK_EXPIRE):
+                # Look in cache
                 host_cache_key = self.ec2_cache_key(host)
                 resolved_host = cache.get(host_cache_key)
-
-                # If host was not found in cache, update cache
+                # Update cache if host is not in it
                 if resolved_host is None:
-                    known_instances = set()
-                    for instance in self.ec2_instances:
-                        if not instance.dns_name or not instance.private_dns_name:
-                            continue
-                        cache_key = self.ec2_cache_key(instance.private_dns_name)
-                        cache.set(cache_key, instance.dns_name,
-                                settings.EC2_DNS_NAMES_CACHE_TTL)
-                        known_instances.add(instance.private_dns_name)
-                    if host not in known_instances:
-                        cache.set(host_cache_key, host)
-                        return host
-                else:
+                    self.update_ec2_names_cache()
+                # Search again in cache
+                resolved_host = cache.get(host_cache_key)
+                if resolved_host is not None:
                     return resolved_host
-
-                # Search again in cache, return original host if it's still not
-                # found
-                cache_key = self.ec2_cache_key(host)
-                resolved_host = cache.get(cache_key)
-                if resolved_host is None:
-                    return host
-                else:
-                    return resolved_host
-
         return host
+
+    def update_ec2_names_cache(self):
+        for instance in self.ec2_instances:
+            if not instance.dns_name or not instance.private_dns_name:
+                continue
+            cache_key = self.ec2_cache_key(instance.private_dns_name)
+            cache.set(cache_key, instance.dns_name,
+                    settings.EC2_DNS_NAMES_CACHE_TTL)

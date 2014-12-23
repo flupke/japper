@@ -40,7 +40,7 @@ install_requires = [
     'raven==4.2.3',
     'boto==2.34.0',
     'django-redis==3.7.2',
-    'django-distributedlock==0.2.2',
+    'python-redis-lock==0.1.2',
 ]
 
 postgres_requires = [
