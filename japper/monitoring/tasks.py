@@ -7,7 +7,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from raven.contrib.django.raven_compat.models import client as raven_client
 
-from japper.utils import report_to_sentry
+from japper.utils import report_to_sentry, single_instance
 from .models import CheckResult, State
 from .status import Status
 from .plugins import iter_monitoring_backends, iter_alert_backends
@@ -19,6 +19,7 @@ logger = get_task_logger(__name__)
 
 @shared_task
 @report_to_sentry
+@single_instance(60*3)
 def fetch_check_results():
     '''
     Cron job fetching check results from monitoring backends.

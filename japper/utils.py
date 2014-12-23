@@ -1,10 +1,15 @@
 import urlparse
 import functools
+import logging
 
 import requests
 from raven.contrib.django.raven_compat.models import client as raven_client
-
+from django_redis import get_redis_connection
+from redis_lock import Lock
 from django.conf import settings
+
+
+logger = logging.getLogger(__name__)
 
 
 def build_absolute_uri(location):
@@ -60,3 +65,37 @@ def report_to_sentry(func):
             raise
 
     return wrapper
+
+
+def single_instance(expire=60*3):
+    '''
+    A decorator that can be used to make sure only one instance of a function
+    is running at the same time.
+
+    If another instance of the function is running, the function is not
+    executed.
+
+    If *expire* is given, the lock is automatically cleaned up after this
+    amount of seconds. The default is 3 minutes.
+    '''
+
+    def decorator(func):
+        func_path = '%s.%s' % (func.__module__, func.__name__)
+        lock_name = 'japper:utils:single_instance:%s' % func_path
+
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            client = get_redis_connection()
+            lock = Lock(client, lock_name, expire=expire)
+            try:
+                if lock.acquire(blocking=False):
+                    return func(*args, **kwargs)
+                else:
+                    logger.warning('another instance of %s is running',
+                            func_path)
+            finally:
+                lock.release()
+
+        return wrapper
+
+    return decorator
