@@ -92,6 +92,10 @@ def update_monitoring_states(state_pk):
     # Retrieve last check results
     results = list(CheckResult.objects.get_state_log(state,
             max_results=settings.MIN_CONSECUTIVE_STATUSES))
+    if not len(results):
+        # Not really sure why (probably a cache somewhere), but we sometimes
+        # have states without check results
+        return
     last_check_result = results[0]
 
     # Is there enough check results to do anything?
