@@ -100,6 +100,7 @@ def update_monitoring_states(state_pk):
     last_check_result = results[0]
 
     # Is there enough check results to do anything?
+    do_send_alerts = False
     if len(results) >= settings.MIN_CONSECUTIVE_STATUSES:
         # If all previous check statuses are equal and different than the current
         # state status, update state
@@ -117,7 +118,8 @@ def update_monitoring_states(state_pk):
                     pass
                 else:
                     # Notify users of the status change
-                    send_alerts.delay(prev_state, state)
+                    do_send_alerts = True
+                    send_alerts_args = (prev_state, state)
                 # Always set the initial_bad_status_reported flag here, to kill
                 # initial status special cases once the status has changed
                 state.initial_bad_status_reported = True
@@ -126,7 +128,8 @@ def update_monitoring_states(state_pk):
                 # If state had initially a non-OK status, also send an alert
                 # (only once)
                 state.initial_bad_status_reported = True
-                send_alerts.delay(None, state)
+                do_send_alerts = True
+                send_alerts_args = (None, state)
 
     # Update state output and metrics if last check result and current state have
     # the same status. This avoids confusion during an alert (we show the
@@ -139,6 +142,10 @@ def update_monitoring_states(state_pk):
     # Always update last_checked timestamp
     state.last_checked = last_check_result.timestamp
     state.save()
+
+    # Send alerts if needed
+    if do_send_alerts:
+        send_alerts.delay(*send_alerts_args)
 
 
 @shared_task
