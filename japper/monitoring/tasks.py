@@ -52,7 +52,7 @@ def fetch_check_results():
             source_type = ContentType.objects.get_for_model(source)
             for state in State.objects.filter(source_type=source_type,
                     source_id=source.pk):
-                update_monitoring_states.delay(state.pk)
+                update_monitoring_states.delay(state.pk, str(timezone.now()))
 
 
 def fetch_source_check_results(source):
@@ -79,7 +79,7 @@ def fetch_source_check_results(source):
 
 @shared_task
 @report_to_sentry
-def update_monitoring_states(state_pk):
+def update_monitoring_states(state_pk, debug_timestamp):
     '''
     Subtask called from :func:`fetch_check_results`, looks back at check
     results history for a state and updates it accordingly.
@@ -119,7 +119,7 @@ def update_monitoring_states(state_pk):
                 else:
                     # Notify users of the status change
                     do_send_alerts = True
-                    send_alerts_args = (prev_state, state)
+                    send_alerts_args = (prev_state, state, debug_timestamp)
                 # Always set the initial_bad_status_reported flag here, to kill
                 # initial status special cases once the status has changed
                 state.initial_bad_status_reported = True
@@ -129,7 +129,7 @@ def update_monitoring_states(state_pk):
                 # (only once)
                 state.initial_bad_status_reported = True
                 do_send_alerts = True
-                send_alerts_args = (None, state)
+                send_alerts_args = (None, state, debug_timestamp)
 
     # Update state output and metrics if last check result and current state have
     # the same status. This avoids confusion during an alert (we show the
@@ -150,7 +150,7 @@ def update_monitoring_states(state_pk):
 
 @shared_task
 @report_to_sentry
-def send_alerts(prev_state, new_state):
+def send_alerts(prev_state, new_state, debug_timestamp):
     '''
     Send alert to all sinks and all users subscribed to them.
     '''
@@ -160,7 +160,8 @@ def send_alerts(prev_state, new_state):
             sink_link = sink.get_alert_sink_text_link()
             for user in User.objects.filter(is_active=True,
                     profile__subscriptions__contains=sink_link):
-                sink.send_alert(prev_state, new_state, user=user)
+                sink.send_alert(prev_state, new_state, user=user,
+                        debug_timestamp=debug_timestamp)
                 logger.warning('sent alert to %s', user)
 
 

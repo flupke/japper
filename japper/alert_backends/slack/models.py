@@ -14,7 +14,8 @@ class AlertSink(AlertSinkBase):
     webhook_url = models.CharField(max_length=4096)
     channel = models.CharField(max_length=255, null=True, blank=True)
 
-    def send_alert(self, prev_state, new_state, user=None):
+    def send_alert(self, prev_state, new_state, user=None,
+            debug_timestamp=''):
         # Send to global channel or user
         if (user is not None
                 and user.profile.slack_nickname is not None
@@ -44,8 +45,8 @@ class AlertSink(AlertSinkBase):
         state_link = format_slack_link(
                 build_absolute_uri(new_state.get_absolute_url()),
                 new_state.full_path())
-        text = '%s - %s is *%s*' % (text_prefix, state_link,
-                new_state.status.name.upper())
+        text = '%s - %s is *%s* %s' % (text_prefix, state_link,
+                new_state.status.name.upper(), debug_timestamp)
 
         if prev_state:
             attachment_title = 'State changed from %s to %s' % (

@@ -10,7 +10,7 @@ from . import settings
 
 class AlertSink(AlertSinkBase):
 
-    def send_alert(self, prev_state, new_state, user=None):
+    def send_alert(self, prev_state, new_state, user=None, debug_timestamp=''):
         if user is None or not user.email.strip():
             return
 
@@ -18,6 +18,7 @@ class AlertSink(AlertSinkBase):
             'prev_state': prev_state,
             'new_state': new_state,
             'state_url': build_absolute_uri(new_state.get_absolute_url()),
+            'debug_timestamp': debug_timestamp,
         })
         subject_template = get_template('django_email/subject.txt')
         subject = subject_template.render(context).strip()
