@@ -1,4 +1,4 @@
-{{ new_state.full_path }} is {{ new_state.status.name|upper }} {{ debug_timestamp }}
+{% autoescape off %}{{ new_state.full_path }} is {{ new_state.status.name|upper }} {{ debug_timestamp }}
 
 {% if prev_state %}State changed from {{ prev_state.status.name|upper }} to {{ new_state.status.name|upper }}{% else %}State is {{ new_state.status.name|upper }}{% endif %}
 
@@ -13,4 +13,4 @@ Status: {{ new_state.status.name|upper }}
     {{ name }}: {{ value }}{% endfor %}
 {% endif %}
 
-{{ state_url }}
+{{ state_url }}{% endautoescape %}

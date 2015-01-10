@@ -1,1 +1,1 @@
-[Japper] {% if new_state.status.is_problem %}PROBLEM{% else %}RECOVERY{% endif %} - {{ new_state.full_path }} is {{ new_state.status.name|upper }}
+{% autoescape off %}[Japper] {% if new_state.status.is_problem %}PROBLEM{% else %}RECOVERY{% endif %} - {{ new_state.full_path }} is {{ new_state.status.name|upper }}{% endautoescape %}
