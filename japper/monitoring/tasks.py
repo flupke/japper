@@ -177,9 +177,9 @@ def cleanup():
     for backend in iter_monitoring_backends():
         for source in backend.get_instances():
             source_type = ContentType.objects.get_for_model(source)
+            CheckResult.objects.filter(source_type=source_type,
+                    source_id=source.pk, timestamp__lt=checks_date).delete()
             if source.has_dynamic_hosts():
                 State.objects.filter(source_type=source_type,
                         source_id=source.pk,
                         last_checked__lt=states_date).delete()
-            CheckResult.objects.filter(source_type=source_type,
-                    source_id=source.pk, timestamp__lt=checks_date).delete()
