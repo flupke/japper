@@ -167,6 +167,7 @@ def send_alerts(prev_state, new_state, debug_timestamp):
 
 @shared_task
 @report_to_sentry
+@single_instance(60*3)
 def cleanup():
     '''
     Cron job to remove expired check results and states.
