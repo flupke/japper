@@ -17,7 +17,7 @@ def test_check_run():
             'host': 'foo.com',
             'status': Status.unknown,
             'metrics': {},
-            'output': 'got empty data for "metric.path"',
+            'output': 'got no valid data points for "metric.path"',
         }
 
     check = Check(target='metric.path', host='foo.com', name='check',

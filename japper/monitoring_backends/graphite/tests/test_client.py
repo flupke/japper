@@ -3,7 +3,7 @@ import json
 import pytest
 from httmock import all_requests, HTTMock
 
-from ..client import GraphiteClient
+from ..client import GraphiteClient, filter_values
 from ..exceptions import InvalidDataFormat, EmptyData
 
 
@@ -88,3 +88,16 @@ def test_aggregators():
         assert client.get_metric('metric.path') == 553.4302959501558
         assert client.get_metric('metric.path', aggregator=max) == 581.9166666666666
         assert client.get_metric('metric.path', aggregator=min) == 524.9439252336449
+
+
+def test_filter_values():
+    ref_datapoints = SINGLE_METRIC_DATA[0]['datapoints']
+    ref_values = [d[0] for d in ref_datapoints]
+    # Test boundaries
+    assert filter_values(ref_datapoints, 100) == ref_values
+    assert filter_values(ref_datapoints, 10) == [ref_values[1], ref_values[2]]
+    assert filter_values(ref_datapoints, 19) == [ref_values[1], ref_values[2]]
+    assert filter_values(ref_datapoints, 20) == ref_values
+    assert filter_values(ref_datapoints, 0) == [ref_values[-1]]
+    # Nones are filtered out
+    assert filter_values([[None, 1], [1, 2], [None, 3]], 100) == [1]
