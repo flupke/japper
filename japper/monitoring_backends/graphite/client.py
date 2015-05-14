@@ -43,7 +43,7 @@ class GraphiteClient(HttpClient):
             raise InvalidDataFormat(err_prefix +
                     'expected a list but got a %s instead' % type(data))
         if not len(data):
-            err_message = err_prefix + 'null data returned'
+            err_message = err_prefix + 'empty data returned'
             raise InvalidDataFormat(err_message)
         if len(data) > 1:
             err_message = err_prefix + 'multiple metrics returned'
