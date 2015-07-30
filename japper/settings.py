@@ -93,7 +93,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 default_db_env = os.environ.get('DEFAULT_DB', 'postgres')
 if default_db_env == 'postgres':
-    default_db = 'postgres://localhost/japper'
+    default_db = 'postgres:///japper'
 elif default_db_env == 'mysql':
     default_db = 'mysql://localhost/japper'
 elif default_db_env == 'sqlite':
