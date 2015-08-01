@@ -1,7 +1,8 @@
 from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import get_object_or_404
 from vanilla import TemplateView, ListView, DetailView
 
-from japper.views import BreadcrumbsMixin
+from japper.views import BreadcrumbsMixin, JsonView
 from .plugins import iter_monitoring_backends, iter_alert_backends
 from .models import State, CheckResult
 from .status import Status
@@ -94,3 +95,12 @@ class StateHistory(BreadcrumbsMixin, DetailView):
         return super(StateHistory, self).get_context_data(page_obj=page,
                 check_results=page.object_list, paginator=page.paginator,
                 **kwargs)
+
+
+class MuteState(JsonView):
+
+    def post(self, request, pk):
+        state = get_object_or_404(State, pk=pk)
+        state.muted = not state.muted
+        state.save()
+        return {'muted': state.muted}

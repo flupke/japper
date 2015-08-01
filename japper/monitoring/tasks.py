@@ -143,8 +143,8 @@ def update_monitoring_states(state_pk, debug_timestamp):
     state.last_checked = last_check_result.timestamp
     state.save()
 
-    # Send alerts if needed
-    if do_send_alerts:
+    # Send alerts if needed and state is not muted
+    if do_send_alerts and not state.muted:
         send_alerts.delay(*send_alerts_args)
 
 

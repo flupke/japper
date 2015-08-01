@@ -51,7 +51,10 @@
             <div class="col-md-10">{{ state.output|default_if_none:'' }}</div>
         </div>
     </div>
-    <a href="{% url 'monitoring_state_history' state.pk %}" id="state-history-link" class="btn btn-default">History</a>
+    <div class="top-right">
+        <button id="mute-button" class="btn btn-default">{{ state.muted|yesno:"Unmute,Mute" }}</button>
+        <a href="{% url 'monitoring_state_history' state.pk %}" id="state-history-link" class="btn btn-default">History</a>
+    </div>
 </div>
 
 <div id="state-metrics"></div>
@@ -59,6 +62,8 @@
 
 {% block page_scripts %}
 <script>
+{% include "include/jquery_csrf.js" %}
+
 $(function () {
     $('#state-metrics').highcharts('StockChart', {
         rangeSelector: {
@@ -85,6 +90,23 @@ $(function () {
             },
             {% endfor %}
         ]
+    });
+
+    $('#mute-button').click(function()
+    {
+        $.ajax({
+            type: 'POST',
+            url: '{% url "monitoring_mute_state" state.pk %}',
+            dataType: 'json',
+            success: function(data)
+            {
+                if (data.muted) {
+                    $('#mute-button').html('Unmute');
+                } else {
+                    $('#mute-button').html('Mute');
+                }
+            }
+        });
     });
 });
 </script>

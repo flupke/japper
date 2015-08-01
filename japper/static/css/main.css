@@ -22,7 +22,7 @@ input.search {
     width: 100%;
 }
 
-#state-history-link {
+#state-heading .top-right {
     right: 10px;
     top: 10px;
     position: absolute;

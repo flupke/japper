@@ -99,3 +99,4 @@ def single_instance(expire=60*3):
         return wrapper
 
     return decorator
+

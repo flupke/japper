@@ -93,6 +93,7 @@ class State(models.Model):
     status = EnumIntegerField(Status, db_index=True)
     output = models.CharField(max_length=4095, null=True)
     metrics = JSONField(null=True)
+    muted = models.BooleanField(default=False)
 
     first_seen = models.DateTimeField(auto_now_add=True)
     last_checked = models.DateTimeField()

@@ -176,3 +176,7 @@ CACHES = {
         }
     }
 }
+
+# Name and domain for CSRF cookie.
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_DOMAIN = None
