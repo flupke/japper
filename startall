@@ -1,0 +1,3 @@
+./manage.py runserver &
+celery -A japper beat &
+celery -A japper worker &
