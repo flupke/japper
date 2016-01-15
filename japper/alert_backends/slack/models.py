@@ -14,8 +14,7 @@ class AlertSink(AlertSinkBase):
     webhook_url = models.CharField(max_length=4096)
     channel = models.CharField(max_length=255, null=True, blank=True)
 
-    def send_alert(self, prev_state, new_state, user=None,
-            debug_timestamp=''):
+    def send_alert(self, prev_state, new_state, user=None, debug_timestamp=''):
         # Send to global channel or user
         if (user is not None
                 and user.profile.slack_nickname is not None
@@ -27,7 +26,8 @@ class AlertSink(AlertSinkBase):
             channel = None
 
         icon_url = build_absolute_uri(
-                staticfiles_storage.url('img/Puppy-Bones.png'))
+            staticfiles_storage.url('img/Puppy-Bones.png')
+        )
 
         if new_state.status == Status.passing:
             color = '#36A64F'
@@ -43,30 +43,37 @@ class AlertSink(AlertSinkBase):
         else:
             text_prefix = '*RECOVERY*'
         state_link = format_slack_link(
-                build_absolute_uri(new_state.get_absolute_url()),
-                new_state.full_path())
-        text = '%s - %s is *%s* %s' % (text_prefix, state_link,
-                new_state.status.name.upper(), debug_timestamp)
+            build_absolute_uri(new_state.get_absolute_url()),
+            new_state.full_path()
+        )
+        text = '%s - %s is *%s* %s' % (text_prefix,
+                                       state_link,
+                                       new_state.status.name.upper(),
+                                       debug_timestamp)
 
         if prev_state:
             attachment_title = 'State changed from %s to %s' % (
-                    prev_state.status.name.upper(),
-                    new_state.status.name.upper())
+                prev_state.status.name.upper(),
+                new_state.status.name.upper()
+            )
         else:
             attachment_title = None
 
         source = format_slack_link(
-                build_absolute_uri(build_search_url(source=new_state.source)),
-                new_state.source)
+            build_absolute_uri(build_search_url(source=new_state.source)),
+            new_state.source
+        )
         if new_state.host:
             host = format_slack_link(
-                    build_absolute_uri(build_search_url(host=new_state.host)),
-                    new_state.host)
+                build_absolute_uri(build_search_url(host=new_state.host)),
+                new_state.host
+            )
         else:
             host = ''
         name = format_slack_link(
-                build_absolute_uri(build_search_url(name=new_state.name)),
-                new_state.name)
+            build_absolute_uri(build_search_url(name=new_state.name)),
+            new_state.name
+        )
 
         if new_state.output:
             attachment_text = 'Output: %s' % new_state.output
@@ -77,9 +84,14 @@ Source: {source}
 Host: {host}
 Name: {name}'''.format(source=source, host=host, name=name)
 
-        self.client.post_message(text, channel=channel, icon_url=icon_url,
-                attachment_color=color, attachment_title=attachment_title,
-                attachment_text=attachment_text)
+        self.client.post_message(
+            text,
+            channel=channel,
+            icon_url=icon_url,
+            attachment_color=color,
+            attachment_title=attachment_title,
+            attachment_text=attachment_text
+        )
 
     @cached_property
     def client(self):

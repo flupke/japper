@@ -100,7 +100,7 @@ elif default_db_env == 'sqlite':
     default_db = 'sqlite://:memory:'
 else:
     raise ValueError('invald DEFAULT_DB environment variable: %s'
-            % default_db_env)
+                     % default_db_env)
 
 DATABASES = {
     'default': env.db(default=default_db),

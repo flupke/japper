@@ -30,11 +30,11 @@ def get_installed_apps(base_apps):
     backend apps.
     '''
     monitoring_backends_apps = (b.get_app_name()
-            for b in iter_monitoring_backends())
+                                for b in iter_monitoring_backends())
     alert_backends_apps = (b.get_app_name()
-            for b in iter_alert_backends())
+                           for b in iter_alert_backends())
     return tuple(itertools.chain(base_apps, monitoring_backends_apps,
-            alert_backends_apps))
+                                 alert_backends_apps))
 
 
 def get_url_patterns(prefix, *base_urls):
@@ -45,11 +45,15 @@ def get_url_patterns(prefix, *base_urls):
     replace it whith this function in your main ``urls.py`` file.
     '''
     monitoring_backends_urls = (
-            url(r'^%s/' % b.get_name(), include(b.get_urls_module()))
-            for b in iter_monitoring_backends())
+        url(r'^%s/' % b.get_name(), include(b.get_urls_module()))
+        for b in iter_monitoring_backends()
+    )
     alert_backends_urls = (
-            url(r'^%s/' % b.get_name(), include(b.get_urls_module()))
-            for b in iter_alert_backends())
-    return patterns(prefix,
-            *itertools.chain(base_urls, monitoring_backends_urls,
-                alert_backends_urls))
+        url(r'^%s/' % b.get_name(), include(b.get_urls_module()))
+        for b in iter_alert_backends()
+    )
+    return patterns(
+        prefix,
+        *itertools.chain(base_urls, monitoring_backends_urls,
+                         alert_backends_urls)
+    )

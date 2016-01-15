@@ -82,12 +82,12 @@ def test_aggregators():
     client = GraphiteClient('https://graphite.com')
     with HTTMock(build_json_response(SINGLE_METRIC_DATA)):
         assert client.get_metric('metric.path') == 577.5714168122989
-        assert client.get_metric('metric.path', aggregator=max) == 625.8536585365854
-        assert client.get_metric('metric.path', aggregator=min) == 524.9439252336449
+        assert client.get_metric('metric.path', aggregator=max) == 625.8536585365854  # NOQA
+        assert client.get_metric('metric.path', aggregator=min) == 524.9439252336449  # NOQA
     with HTTMock(build_json_response(METRIC_WITH_NULL_DATA)):
         assert client.get_metric('metric.path') == 553.4302959501558
-        assert client.get_metric('metric.path', aggregator=max) == 581.9166666666666
-        assert client.get_metric('metric.path', aggregator=min) == 524.9439252336449
+        assert client.get_metric('metric.path', aggregator=max) == 581.9166666666666  # NOQA
+        assert client.get_metric('metric.path', aggregator=min) == 524.9439252336449  # NOQA
 
 
 def test_filter_values():

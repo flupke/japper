@@ -10,4 +10,3 @@ class GraphiteBackend(MonitoringBackend):
 
 def create_backend():
     return GraphiteBackend()
-

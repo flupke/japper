@@ -38,9 +38,13 @@ def fetch_check_results():
 
             # Also store a check result for the monitoring source
             source_health_name = '%s:health' % source
-            check_obj = CheckResult(source=source, status=status,
-                    name=source_health_name, host=source_health_name,
-                    output=check_output)
+            check_obj = CheckResult(
+                source=source,
+                status=status,
+                name=source_health_name,
+                host=source_health_name,
+                output=check_output
+            )
             # Not sure if django sets auto_now_add fields in constructor,
             # better set it by hand
             check_obj.timestamp = timezone.now()
@@ -51,7 +55,7 @@ def fetch_check_results():
             # Analyze check results time series and update states
             source_type = ContentType.objects.get_for_model(source)
             for state in State.objects.filter(source_type=source_type,
-                    source_id=source.pk):
+                                              source_id=source.pk):
                 update_monitoring_states.delay(state.pk, str(timezone.now()))
 
 
@@ -73,8 +77,11 @@ def fetch_source_check_results(source):
 
     # Delete removed hosts states
     source_type = ContentType.objects.get_for_model(source)
-    State.objects.filter(source_type=source_type, source_id=source.pk,
-            host__in=removed_hosts).delete()
+    State.objects.filter(
+        source_type=source_type,
+        source_id=source.pk,
+        host__in=removed_hosts
+    ).delete()
 
 
 @shared_task
@@ -91,8 +98,10 @@ def update_monitoring_states(state_pk, debug_timestamp):
     prev_state = copy.deepcopy(state)
 
     # Retrieve last check results
-    results = list(CheckResult.objects.get_state_log(state,
-            max_results=settings.MIN_CONSECUTIVE_STATUSES))
+    results = list(CheckResult.objects.get_state_log(
+        state,
+        max_results=settings.MIN_CONSECUTIVE_STATUSES
+    ))
     if not len(results):
         # Not really sure why (probably a cache somewhere), but we sometimes
         # have states without check results
@@ -102,8 +111,8 @@ def update_monitoring_states(state_pk, debug_timestamp):
     # Is there enough check results to do anything?
     do_send_alerts = False
     if len(results) >= settings.MIN_CONSECUTIVE_STATUSES:
-        # If all previous check statuses are equal and different than the current
-        # state status, update state
+        # If all previous check statuses are equal and different than the
+        # current state status, update state
         statuses = [r.status for r in results]
         if statuses.count(statuses[0]) == len(statuses):
             if state.status != statuses[0]:
@@ -131,8 +140,8 @@ def update_monitoring_states(state_pk, debug_timestamp):
                 do_send_alerts = True
                 send_alerts_args = (None, state, debug_timestamp)
 
-    # Update state output and metrics if last check result and current state have
-    # the same status. This avoids confusion during an alert (we show the
+    # Update state output and metrics if lAst check result and current state
+    # have the same status. This avoids confusion during an alert (we show the
     # output of the check result when the alert started), and still show
     # up-to-date information when the state is stable.
     if last_check_result.status == state.status:
@@ -158,10 +167,16 @@ def send_alerts(prev_state, new_state, debug_timestamp):
         for sink in backend.get_instances(active=True):
             sink.send_alert(prev_state, new_state)
             sink_link = sink.get_alert_sink_text_link()
-            for user in User.objects.filter(is_active=True,
-                    profile__subscriptions__contains=sink_link):
-                sink.send_alert(prev_state, new_state, user=user,
-                        debug_timestamp=debug_timestamp)
+            for user in User.objects.filter(
+                is_active=True,
+                profile__subscriptions__contains=sink_link
+            ):
+                sink.send_alert(
+                    prev_state,
+                    new_state,
+                    user=user,
+                    debug_timestamp=debug_timestamp
+                )
                 logger.warning('sent alert to %s', user)
 
 
@@ -179,8 +194,9 @@ def cleanup():
         for source in backend.get_instances():
             source_type = ContentType.objects.get_for_model(source)
             CheckResult.objects.filter(source_type=source_type,
-                    source_id=source.pk, timestamp__lt=checks_date).delete()
+                                       source_id=source.pk,
+                                       timestamp__lt=checks_date).delete()
             if source.has_dynamic_hosts():
                 State.objects.filter(source_type=source_type,
-                        source_id=source.pk,
-                        last_checked__lt=states_date).delete()
+                                     source_id=source.pk,
+                                     last_checked__lt=states_date).delete()

@@ -12,7 +12,7 @@ class SlackWebhookClient(HttpClient):
         self.post(self.webhook_url, data=json.dumps(message))
 
     def post_message(self, text, attachment_color=None, attachment_title=None,
-            attachment_text=None, icon_url=None, channel=None):
+                     attachment_text=None, icon_url=None, channel=None):
         message = {'text': text}
         if icon_url is not None:
             message['icon_url'] = icon_url

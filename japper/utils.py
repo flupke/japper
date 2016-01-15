@@ -29,26 +29,30 @@ class HttpClient(object):
         self.timeout = timeout
         # Setup requests session
         self.session = requests.Session()
-        self.session.mount('http://',
-                requests.adapters.HTTPAdapter(max_retries=max_retries))
-        self.session.mount('https://',
-                requests.adapters.HTTPAdapter(max_retries=max_retries))
+        self.session.mount(
+            'http://',
+            requests.adapters.HTTPAdapter(max_retries=max_retries)
+        )
+        self.session.mount(
+            'https://',
+            requests.adapters.HTTPAdapter(max_retries=max_retries)
+        )
 
     def request(self, method, url, data=None, params=None,
-            raise_for_status=True):
+                raise_for_status=True):
         response = self.session.request(method, url, data=data, params=params,
-                timeout=self.timeout)
+                                        timeout=self.timeout)
         if raise_for_status:
             response.raise_for_status()
         return response
 
     def get(self, url, data=None, params=None, raise_for_status=True):
         return self.request('GET', url, data=data, params=params,
-                raise_for_status=raise_for_status)
+                            raise_for_status=raise_for_status)
 
     def post(self, url, data=None, params=None, raise_for_status=True):
         return self.request('POST', url, data=data, params=params,
-                raise_for_status=raise_for_status)
+                            raise_for_status=raise_for_status)
 
 
 def report_to_sentry(func):
@@ -92,11 +96,10 @@ def single_instance(expire=60*3):
                     return func(*args, **kwargs)
                 else:
                     logger.warning('another instance of %s is running',
-                            func_path)
+                                   func_path)
             finally:
                 lock.release()
 
         return wrapper
 
     return decorator
-

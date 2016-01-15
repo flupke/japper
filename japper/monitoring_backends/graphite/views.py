@@ -58,7 +58,7 @@ class ChecksList(BreadcrumbsMixin, DetailView):
     def get_context_data(self, **kwargs):
         source = self.get_object()
         return super(ChecksList, self).get_context_data(
-                checks=source.checks.all(), **kwargs)
+            checks=source.checks.all(), **kwargs)
 
 
 class CheckCRUDViewMixin(object):

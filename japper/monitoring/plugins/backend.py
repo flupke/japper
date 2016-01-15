@@ -43,9 +43,10 @@ class Backend(object):
         Return a descriptive name for the monitoring backend.
         '''
         if self.name is None:
-            raise ImproperlyConfigured('subclasses of %s '
-                    'must define the name property or reimplement get_name()' %
-                    self.__class__.__name__)
+            raise ImproperlyConfigured(
+                'subclasses of %s must define the name property or '
+                'reimplement get_name()' % self.__class__.__name__
+            )
         return self.name
 
     def get_urls_module(self):
@@ -65,10 +66,11 @@ class Backend(object):
         Return the view name for creating a new monitoring source.
         '''
         if self.create_instance_view is None:
-            raise ImproperlyConfigured('subclasses of %s '
-                    'must define the create_instance_view property or '
-                    'reimplement get_create_instance_view()' %
-                    self.__class__.__name__)
+            raise ImproperlyConfigured(
+                'subclasses of %s must define the create_instance_view '
+                'property or reimplement get_create_instance_view()' %
+                self.__class__.__name__
+            )
         return self.create_instance_view
 
     def get_model(self):
@@ -76,10 +78,9 @@ class Backend(object):
         Return the model class associated with this backend.
         '''
         if self.model is None:
-            raise ImproperlyConfigured('subclasses of %s '
-                    'must define the model property '
-                    'or reimplement get_model()' %
-                    self.__class__.__name__)
+            raise ImproperlyConfigured(
+                'subclasses of %s must define the model property or '
+                'reimplement get_model()' % self.__class__.__name__)
         if isinstance(self.model, six.string_types):
             model = get_model(self.model)
         else:

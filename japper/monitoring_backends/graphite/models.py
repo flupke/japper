@@ -12,8 +12,10 @@ from .exceptions import InvalidDataFormat, EmptyData
 
 class MonitoringSource(MonitoringSourceBase):
 
-    endpoint = models.CharField(max_length=4096,
-            help_text='The base URL of the graphite endpoint')
+    endpoint = models.CharField(
+        max_length=4096,
+        help_text='The base URL of the graphite endpoint'
+    )
 
     def get_check_results(self):
         client = GraphiteClient(self.endpoint)
@@ -24,7 +26,7 @@ class MonitoringSource(MonitoringSourceBase):
 
     def get_absolute_url(self):
         return reverse('graphite_update_monitoring_source',
-                kwargs={'pk': self.pk})
+                       kwargs={'pk': self.pk})
 
     def get_ui_entry_points(self):
         return [
@@ -73,17 +75,21 @@ class Check(models.Model):
     PASSING_FMT = '{status} - {metric} {operator} {value}'
 
     source = models.ForeignKey(MonitoringSource, related_name='checks',
-            editable=False)
+                               editable=False)
 
     name = models.CharField(max_length=255)
     enabled = models.BooleanField(default=True)
-    target = models.CharField(max_length=4096, help_text='The graphite path '
-            'to evaluate, you may use functions here. It must ouptut '
-            'a single metric.')
-    metric_aggregator = models.SmallIntegerField(choices=AGGREGATORS,
-            default=AVERAGE, help_text='The last 1 minute of values from '
-            'target are aggregated using this function. The result is then '
-            'compared to the threshold values below.')
+    target = models.CharField(
+        max_length=4096,
+        help_text='The graphite path to evaluate, you may use functions '
+        'here. It must ouptut a single metric.'
+    )
+    metric_aggregator = models.SmallIntegerField(
+        choices=AGGREGATORS,
+        default=AVERAGE,
+        help_text='The last 1 minute of values from target are aggregated '
+        'using this function. The result is then compared to the threshold '
+        'values below.')
     host = models.CharField(max_length=255, null=True, blank=True)
     warning_operator = models.SmallIntegerField(choices=OPERATORS, default=GE)
     warning_value = models.FloatField()
@@ -114,15 +120,19 @@ class Check(models.Model):
                 operator = '='
                 threshold_value = None
                 output_fmt = self.PASSING_FMT
-            output = output_fmt.format(status=status.name, metric=self.name,
-                    operator=operator, threshold_value=threshold_value,
-                    value=value)
+            output = output_fmt.format(
+                status=status.name,
+                metric=self.name,
+                operator=operator,
+                threshold_value=threshold_value,
+                value=value
+            )
             return self.build_check_dict(status, output,
-                    metrics={self.name: value})
+                                         metrics={self.name: value})
         except Exception as exc:
             raven_client.captureException()
             return self.build_check_dict(Status.unknown,
-                'unexpected error: %s' % exc)
+                                         'unexpected error: %s' % exc)
 
     def build_check_dict(self, status, output=None, metrics={}):
         return {

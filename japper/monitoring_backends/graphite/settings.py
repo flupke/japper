@@ -6,4 +6,4 @@ from django.conf import settings
 # normal...) , so we query at least this amount of data and just take the
 # interval that interest us in it.
 MINIMUM_QUERIES_RANGE = getattr(settings, 'GRAPHITE_MINIMUM_QUERIES_RANGE',
-        60 * 10)
+                                60 * 10)

@@ -13,19 +13,20 @@ from . import settings
 
 class MonitoringSource(MonitoringSourceBase):
 
-    endpoints = models.TextField(help_text='List of consul HTTP endpoints, e.g. '
-            'http://localhost:8500/')
-    dynamic_hosts = models.BooleanField(default=False, help_text='Use this '
-            'option when the list of hosts in this group is dynamic (e.g. '
-            'when using autoscaling on EC2) and offline hosts should be '
-            'removed instead of generating alerts')
-    search_ec2_public_dns = models.BooleanField(default=False,
-            help_text='Use EC2 API to retrieve the public DNS of the hosts '
-            'from their default hostname')
+    endpoints = models.TextField(help_text='List of consul HTTP endpoints, '
+                                 'e.g. http://localhost:8500/')
+    dynamic_hosts = models.BooleanField(
+        default=False, help_text='Use this option when the list of hosts in '
+        'this group is dynamic (e.g. when using autoscaling on EC2) and '
+        'offline hosts should be removed instead of generating alerts')
+    search_ec2_public_dns = models.BooleanField(
+        default=False,
+        help_text='Use EC2 API to retrieve the public DNS of the hosts from '
+        'their default hostname')
     aws_region = models.CharField(max_length=255, blank=True, null=True)
     aws_access_key_id = models.CharField(max_length=255, blank=True, null=True)
     aws_secret_access_key = models.CharField(max_length=255, blank=True,
-            null=True)
+                                             null=True)
 
     def clean(self):
         if (self.search_ec2_public_dns and (
@@ -33,7 +34,7 @@ class MonitoringSource(MonitoringSourceBase):
                 not self.aws_access_key_id.strip() or
                 not self.aws_secret_access_key.strip())):
             raise ValidationError('AWS credentials must be supplied to '
-                'search EC2 public DNS names')
+                                  'search EC2 public DNS names')
 
     @cached_property
     def checks_state(self):
@@ -72,14 +73,18 @@ class MonitoringSource(MonitoringSourceBase):
         return self.dynamic_hosts
 
     def get_absolute_url(self):
-        return reverse('consul_update_monitoring_source',
-                kwargs={'pk': self.pk})
+        return reverse(
+            'consul_update_monitoring_source',
+            kwargs={'pk': self.pk}
+        )
 
     @cached_property
     def ec2_conn(self):
-        return ec2.connect_to_region(self.aws_region,
-                aws_access_key_id=self.aws_access_key_id,
-                aws_secret_access_key=self.aws_secret_access_key)
+        return ec2.connect_to_region(
+            self.aws_region,
+            aws_access_key_id=self.aws_access_key_id,
+            aws_secret_access_key=self.aws_secret_access_key
+        )
 
     @cached_property
     def ec2_instances(self):
@@ -93,7 +98,7 @@ class MonitoringSource(MonitoringSourceBase):
             # We don't want all celery workers to go crazy and update the cache
             # at the same time, so we use a distributed lock here
             with cache.lock('japper:consul:search_ec2_public_dns',
-                    expire=settings.EC2_DNS_LOCK_EXPIRE):
+                            expire=settings.EC2_DNS_LOCK_EXPIRE):
                 # Look in cache
                 host_cache_key = self.ec2_cache_key(host)
                 resolved_host = cache.get(host_cache_key)
@@ -112,4 +117,4 @@ class MonitoringSource(MonitoringSourceBase):
                 continue
             cache_key = self.ec2_cache_key(instance.private_dns_name)
             cache.set(cache_key, instance.dns_name,
-                    settings.EC2_DNS_NAMES_CACHE_TTL)
+                      settings.EC2_DNS_NAMES_CACHE_TTL)

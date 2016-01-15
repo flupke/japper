@@ -123,7 +123,7 @@ class State(models.Model):
                     else:
                         if state.last_status_change is not None:
                             oldest_problem_date = min(oldest_problem_date,
-                                    state.last_status_change)
+                                                      state.last_status_change)
                     has_problems = True
                 if state.initial_bad_status_reported:
                     might_be_starting = False
@@ -178,5 +178,3 @@ class State(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return 'monitoring_state_detail', [self.pk]
-
-

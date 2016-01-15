@@ -20,6 +20,10 @@ class StatesSearchForm(forms.Form):
         self.helper.layout = Layout(
             FieldWithButtons(
                 Field('q', placeholder='Search', css_class='search'),
-            StrictButton('<span class="glyphicon glyphicon-search"></span>', type='submit', css_class='btn-default'),
+                StrictButton(
+                    '<span class="glyphicon glyphicon-search"></span>',
+                    type='submit',
+                    css_class='btn-default'
+                ),
             )
         )

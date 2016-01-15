@@ -30,5 +30,8 @@ class UserSubscriptionsForm(forms.Form):
                     sink.get_alert_sink_text_link(), '%s/%s' %
                     (backend.get_name(), sink.name)
                 ))
-        self.fields['subscriptions'] = forms.MultipleChoiceField(choices,
-                required=False, widget=forms.CheckboxSelectMultiple)
+        self.fields['subscriptions'] = forms.MultipleChoiceField(
+            choices,
+            required=False,
+            widget=forms.CheckboxSelectMultiple
+        )

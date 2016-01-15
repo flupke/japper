@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import login_required
 from .views import CreateAlertSink, UpdateAlertSink, DeleteAlertSink
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^alert-sink/create/$',
         login_required(CreateAlertSink.as_view()),
         name='django_email_create_alert_sink'),

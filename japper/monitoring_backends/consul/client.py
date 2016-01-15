@@ -36,7 +36,7 @@ class ConsulClient(HttpClient):
                 self.remote_servers.append(server)
 
     def request(self, method, path, data=None, params=None,
-            raise_for_status=True):
+                raise_for_status=True):
         local_servers = self.local_servers[:]
         remote_servers = self.remote_servers[:]
         random.shuffle(local_servers)
@@ -45,12 +45,16 @@ class ConsulClient(HttpClient):
         for base_url in servers:
             url = urljoin(base_url, path)
             try:
-                response = super(ConsulClient, self).request(method, url,
-                        data=json.dumps(data), params=params)
+                response = super(ConsulClient, self).request(
+                    method,
+                    url,
+                    data=json.dumps(data),
+                    params=params
+                )
                 break
             except requests.RequestException:
                 logger.warning('consul request failed on %s', url,
-                        exc_info=True)
+                               exc_info=True)
         else:
             error_fmt = 'all consul servers are offline: %s'
             error_args = ', '.join(servers)

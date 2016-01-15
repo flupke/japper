@@ -21,8 +21,9 @@ def test_check_run():
         }
 
     check = Check(target='metric.path', host='foo.com', name='check',
-            critical_operator=Check.GT, critical_value=0)
-    with HTTMock(build_json_response([{'datapoints': [[1, 1]], 'target': 'foo'}])):
+                  critical_operator=Check.GT, critical_value=0)
+    response_data = [{'datapoints': [[1, 1]], 'target': 'foo'}]
+    with HTTMock(build_json_response(response_data)):
         assert check.run(client) == {
             'name': 'check',
             'host': 'foo.com',
@@ -32,9 +33,10 @@ def test_check_run():
         }
 
     check = Check(target='metric.path', host='foo.com', name='check',
-            critical_operator=Check.LT, critical_value=0,
-            warning_operator=Check.GT, warning_value=0)
-    with HTTMock(build_json_response([{'datapoints': [[1, 1]], 'target': 'foo'}])):
+                  critical_operator=Check.LT, critical_value=0,
+                  warning_operator=Check.GT, warning_value=0)
+    response_data = [{'datapoints': [[1, 1]], 'target': 'foo'}]
+    with HTTMock(build_json_response(response_data)):
         assert check.run(client) == {
             'name': 'check',
             'host': 'foo.com',
@@ -44,9 +46,10 @@ def test_check_run():
         }
 
     check = Check(target='metric.path', host='foo.com', name='check',
-            critical_operator=Check.LT, critical_value=0,
-            warning_operator=Check.LT, warning_value=0)
-    with HTTMock(build_json_response([{'datapoints': [[1, 1]], 'target': 'foo'}])):
+                  critical_operator=Check.LT, critical_value=0,
+                  warning_operator=Check.LT, warning_value=0)
+    response_data = [{'datapoints': [[1, 1]], 'target': 'foo'}]
+    with HTTMock(build_json_response(response_data)):
         assert check.run(client) == {
             'name': 'check',
             'host': 'foo.com',

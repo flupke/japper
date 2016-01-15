@@ -8,4 +8,3 @@ class AlertSinkForm(forms.ModelForm):
     class Meta:
         model = AlertSink
         exclude = []
-

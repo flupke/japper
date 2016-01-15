@@ -2,11 +2,12 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
 from .views import (CreateMonitoringSource, UpdateMonitoringSource,
-        DeleteMonitoringSource, ChecksList, CreateCheck, UpdateCheck,
-        DeleteCheck)
+                    DeleteMonitoringSource, ChecksList, CreateCheck,
+                    UpdateCheck, DeleteCheck)
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^monitoring-source/create/$',
         login_required(CreateMonitoringSource.as_view()),
         name='graphite_create_monitoring_source'),

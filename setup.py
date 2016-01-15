@@ -94,10 +94,10 @@ setup(
     entry_points={
         'japper.monitoring_backends': [
             'consul = japper.monitoring_backends.consul.plugin:create_backend',
-            'graphite = japper.monitoring_backends.graphite.plugin:create_backend',
+            'graphite = japper.monitoring_backends.graphite.plugin:create_backend',  # NOQA
         ],
         'japper.alert_backends': [
-            'django_email = japper.alert_backends.django_email.plugin:create_backend',
+            'django_email = japper.alert_backends.django_email.plugin:create_backend',  # NOQA
             'slack = japper.alert_backends.slack.plugin:create_backend',
         ],
     },

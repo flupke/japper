@@ -6,7 +6,8 @@ from django.views.generic import RedirectView
 from japper.monitoring.plugins import get_url_patterns
 
 
-urlpatterns = get_url_patterns('',
+urlpatterns = get_url_patterns(
+    '',
     url(r'^$', RedirectView.as_view(pattern_name='monitoring_problems'),
         name='frontpage'),
     url(r'^admin/', include(admin.site.urls)),

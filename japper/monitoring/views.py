@@ -16,7 +16,9 @@ class MonitoringSourcesList(TemplateView):
 
     def get_context_data(self, **kwargs):
         return super(MonitoringSourcesList, self).get_context_data(
-                backends=iter_monitoring_backends(), **kwargs)
+            backends=iter_monitoring_backends(),
+            **kwargs
+        )
 
 
 class AlertSinksList(TemplateView):
@@ -25,7 +27,9 @@ class AlertSinksList(TemplateView):
 
     def get_context_data(self, **kwargs):
         return super(AlertSinksList, self).get_context_data(
-                backends=iter_alert_backends(), **kwargs)
+            backends=iter_alert_backends(),
+            **kwargs
+        )
 
 
 class StatesList(ListView):
@@ -53,11 +57,12 @@ class StatesList(ListView):
         states_by_host = State.group_by_host(self.object_list)
         search_form = self.get_form(self.request.GET)
         return super(StatesList, self).get_context_data(
-                states_by_host=states_by_host,
-                Status=Status,
-                problems_only=self.problems_only,
-                search_form=search_form,
-                **kwargs)
+            states_by_host=states_by_host,
+            Status=Status,
+            problems_only=self.problems_only,
+            search_form=search_form,
+            **kwargs
+        )
 
 
 class StateDetail(BreadcrumbsMixin, DetailView):
@@ -89,12 +94,16 @@ class StateHistory(BreadcrumbsMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         state = self.get_object()
-        check_results = CheckResult.objects.get_state_log(state, max_results=None)
+        check_results = CheckResult.objects.get_state_log(state,
+                                                          max_results=None)
         paginate_by = self.get_paginate_by()
         page = self.paginate_queryset(check_results, paginate_by)
-        return super(StateHistory, self).get_context_data(page_obj=page,
-                check_results=page.object_list, paginator=page.paginator,
-                **kwargs)
+        return super(StateHistory, self).get_context_data(
+            page_obj=page,
+            check_results=page.object_list,
+            paginator=page.paginator,
+            **kwargs
+        )
 
 
 class MuteState(JsonView):

@@ -9,7 +9,8 @@ class Status(Enum):
     unknown = 4
     flapping = 5
 
-    def do_not_call_in_templates(): pass
+    def do_not_call_in_templates():
+        pass
 
     @classmethod
     def from_string(cls, value):

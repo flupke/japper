@@ -16,7 +16,8 @@ _registry = {}
 def register_tag(name, filter_func):
     if name in _registry:
         raise ValueError('cannot register search filter func %s, name %s '
-                'is already used by %s' % (filter_func, name, _registry[name]))
+                         'is already used by %s' % (filter_func, name,
+                                                    _registry[name]))
     _registry[name] = filter_func
 
 
@@ -99,8 +100,7 @@ def filter_by_backend(backend, source_name):
         backend_instance = qs.get(name=source_name)
     except ObjectDoesNotExist:
         return Q()
-    source_type = ContentType.objects.get_for_model(
-            backend_instance)
+    source_type = ContentType.objects.get_for_model(backend_instance)
     return Q(source_type=source_type, source_id=backend_instance.pk)
 
 
@@ -111,7 +111,8 @@ register_tag('source', filter_by_source)
 register_tag(None, filter_by_any)
 
 
-def build_search_url(name=None, host=None, status=None, source=None, text=None):
+def build_search_url(name=None, host=None, status=None, source=None,
+                     text=None):
     '''
     Build a search query for the given parameters.
     '''

@@ -44,8 +44,10 @@ class GraphiteClient(HttpClient):
         # Check data format
         err_prefix = 'got invalid data for "%s": ' % target
         if not isinstance(data, list):
-            raise InvalidDataFormat(err_prefix +
-                    'expected a list but got a %s instead' % type(data))
+            raise InvalidDataFormat(
+                err_prefix + 'expected a list but got a %s instead' %
+                type(data)
+            )
         if not len(data):
             err_message = err_prefix + 'empty data returned'
             raise InvalidDataFormat(err_message)
@@ -53,8 +55,9 @@ class GraphiteClient(HttpClient):
             err_message = err_prefix + 'multiple metrics returned'
             raise InvalidDataFormat(err_message)
         if not isinstance(data[0], dict):
-            raise InvalidDataFormat(err_prefix + 'expected a dict '
-                    'at item 0 but got a %s instead' % type(data[0]))
+            raise InvalidDataFormat(
+                err_prefix + 'expected a dict at item 0 but got a %s instead' %
+                type(data[0]))
 
         # Filter data, removing null points and trimming to the desired range
         values = filter_values(data[0]['datapoints'], from_)
@@ -74,7 +77,7 @@ def filter_values(datapoints, max_age):
     '''
     # Convert timestamps and filter out null values
     datapoints = [(e[0], datetime.datetime.fromtimestamp(e[1]))
-        for e in datapoints if e[0] is not None]
+                  for e in datapoints if e[0] is not None]
     if not len(datapoints):
         return []
     last_point_date = datapoints[-1][1]
