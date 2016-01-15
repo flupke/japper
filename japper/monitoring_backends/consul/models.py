@@ -1,14 +1,12 @@
 from django.db import models
 from django.core.urlresolvers import reverse
-from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.utils.functional import cached_property
-from boto import ec2
 
 from japper.monitoring.plugins.models import MonitoringSourceBase
 from japper.monitoring.status import Status
+from japper import ec2utils
 from .client import ConsulClient, parse_nagios_output
-from . import settings
 
 
 class MonitoringSource(MonitoringSourceBase):
@@ -78,43 +76,11 @@ class MonitoringSource(MonitoringSourceBase):
             kwargs={'pk': self.pk}
         )
 
-    @cached_property
-    def ec2_conn(self):
-        return ec2.connect_to_region(
-            self.aws_region,
-            aws_access_key_id=self.aws_access_key_id,
-            aws_secret_access_key=self.aws_secret_access_key
-        )
-
-    @cached_property
-    def ec2_instances(self):
-        return self.ec2_conn.get_only_instances()
-
-    def ec2_cache_key(self, host):
-        return 'japper:consul:ec2_public_dns:%s' % host
-
     def resolve_host(self, host):
         if self.search_ec2_public_dns:
-            # We don't want all celery workers to go crazy and update the cache
-            # at the same time, so we use a distributed lock here
-            with cache.lock('japper:consul:search_ec2_public_dns',
-                            expire=settings.EC2_DNS_LOCK_EXPIRE):
-                # Look in cache
-                host_cache_key = self.ec2_cache_key(host)
-                resolved_host = cache.get(host_cache_key)
-                # Update cache if host is not in it
-                if resolved_host is None:
-                    self.update_ec2_names_cache()
-                # Search again in cache
-                resolved_host = cache.get(host_cache_key)
-                if resolved_host is not None:
-                    return resolved_host
-        return host
-
-    def update_ec2_names_cache(self):
-        for instance in self.ec2_instances:
-            if not instance.dns_name or not instance.private_dns_name:
-                continue
-            cache_key = self.ec2_cache_key(instance.private_dns_name)
-            cache.set(cache_key, instance.dns_name,
-                      settings.EC2_DNS_NAMES_CACHE_TTL)
+            return ec2utils.search_public_dns(host,
+                                              self.aws_region,
+                                              self.aws_access_key_id,
+                                              self.aws_secret_access_key)
+        else:
+            return host

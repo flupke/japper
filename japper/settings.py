@@ -180,3 +180,7 @@ CACHES = {
 # Name and domain for CSRF cookie.
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_DOMAIN = None
+
+# ec2utils settings
+EC2_DNS_NAMES_CACHE_TTL = 3600 * 24
+EC2_DNS_LOCK_EXPIRE = 60 * 2

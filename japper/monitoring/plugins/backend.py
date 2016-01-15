@@ -80,7 +80,8 @@ class Backend(object):
         if self.model is None:
             raise ImproperlyConfigured(
                 'subclasses of %s must define the model property or '
-                'reimplement get_model()' % self.__class__.__name__)
+                'reimplement get_model()' % self.__class__.__name__
+            )
         if isinstance(self.model, six.string_types):
             model = get_model(self.model)
         else:
