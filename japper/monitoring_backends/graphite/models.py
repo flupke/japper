@@ -14,15 +14,33 @@ class MonitoringSource(MonitoringSourceBase):
 
     endpoint = models.CharField(
         max_length=4096,
-        help_text='The base URL of the graphite endpoint'
-    )
+        help_text='The base URL of the graphite endpoint')
+    dynamic_hosts = models.BooleanField(
+        default=False, help_text='Use this option when the list of hosts from '
+        'this source is dynamic (e.g. when using autoscaling on EC2) and '
+        'offline hosts should be removed instead of generating alerts')
+    dead_hosts_query = models.TextField(
+        max_length=4096,
+        help_text='A graphite query that targets dead servers, used to remove '
+        'dead dynamic hosts from Japper.')
+    search_ec2_public_dns = models.BooleanField(
+        default=False,
+        help_text='Use EC2 API to retrieve the public DNS of the hosts from '
+        'their default hostname')
+    aws_region = models.CharField(max_length=255, blank=True, null=True)
+    aws_access_key_id = models.CharField(max_length=255, blank=True, null=True)
+    aws_secret_access_key = models.CharField(max_length=255, blank=True,
+                                             null=True)
 
     def get_check_results(self):
-        client = GraphiteClient(self.endpoint)
+        client = self.create_client()
         ret = []
         for check in self.checks.all():
             ret.append(check.run(client))
         return ret
+
+    def create_client(self):
+        return GraphiteClient(self.endpoint)
 
     def get_absolute_url(self):
         return reverse('graphite_update_monitoring_source',
@@ -34,8 +52,13 @@ class MonitoringSource(MonitoringSourceBase):
         ]
 
     def has_dynamic_hosts(self):
-        # The notion of hosts in graphite backend is for grouping only
-        return True
+        return self.dynamic_hosts
+
+    def get_removed_hosts(self):
+        if not self.dynamic_hosts:
+            return []
+        client = self.create_client()
+        client.get_metric(self.dead_hosts_query, allow_multiple=True)
 
 
 class Check(models.Model):
@@ -79,17 +102,16 @@ class Check(models.Model):
 
     name = models.CharField(max_length=255)
     enabled = models.BooleanField(default=True)
-    target = models.CharField(
+    query = models.TextField(
         max_length=4096,
-        help_text='The graphite path to evaluate, you may use functions '
-        'here. It must ouptut a single metric.'
-    )
+        help_text='The graphite query to evaluate, If it returns '
+        'multiple metrics, the target name is used to fill the host.')
     metric_aggregator = models.SmallIntegerField(
         choices=AGGREGATORS,
         default=AVERAGE,
-        help_text='The last 1 minute of values from target are aggregated '
-        'using this function. The result is then compared to the threshold '
-        'values below.')
+        help_text='The last 1 minute of values are aggregated using this '
+        'function. The result is then compared to the threshold values '
+        'below.')
     host = models.CharField(max_length=255, null=True, blank=True)
     warning_operator = models.SmallIntegerField(choices=OPERATORS, default=GE)
     warning_value = models.FloatField()
@@ -148,3 +170,4 @@ class Check(models.Model):
 
     def get_absolute_url(self):
         return reverse('graphite_update_check', kwargs={'pk': self.pk})
+
