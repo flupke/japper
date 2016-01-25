@@ -40,7 +40,7 @@ install_requires = [
     'raven==4.2.3',
     'boto==2.34.0',
     'python-redis-lock[django]==1.0.0',
-    'robust-graphite-client==1.0.0',
+    'robust-graphite-client[security]==1.0.1',
 ]
 
 postgres_requires = [
