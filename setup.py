@@ -29,7 +29,6 @@ install_requires = [
     'django-paging==0.2.5',
     'enum34==1.0.3',
     'django-enumfields==0.5.1',
-    'requests==2.4.3',
     'django-vanilla-views==1.0.3',
     'django-environ==0.3.0',
     'jsonfield==1.0.0',
@@ -40,7 +39,8 @@ install_requires = [
     'raven==4.2.3',
     'boto==2.34.0',
     'python-redis-lock[django]==1.0.0',
-    'robust-graphite-client[security]==1.0.1',
+    'robust-graphite-client==1.0.2',
+    'requests[security]==2.9.1',
 ]
 
 postgres_requires = [
