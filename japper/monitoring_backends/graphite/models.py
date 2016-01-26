@@ -4,13 +4,14 @@ from django.db import models
 from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from raven.contrib.django.raven_compat.models import client as raven_client
+from robgracli import GraphiteClient
+from robgracli.client import average
+from robgracli.exceptions import GraphiteException
 
 from japper.monitoring.plugins.models import MonitoringSourceBase
 from japper.monitoring.status import Status
 from japper.monitoring.models import State
 from japper.ec2utils import search_public_dns
-from robgracli import GraphiteClient
-from robgracli.client import average
 
 
 class MonitoringSource(MonitoringSourceBase):
@@ -145,8 +146,8 @@ class Check(models.Model):
     def run(self, source, client):
         agg_func = self.AGGREGATOR_FUNCS[self.metric_aggregator]
         try:
-            result = client.aggregate(self.target, aggregator=agg_func)
-        except Exception as exc:
+            result = client.aggregate(self.query, aggregator=agg_func)
+        except GraphiteException as exc:
             raven_client.captureException()
             hosts = source.get_associated_states_hosts()
             ret = []
@@ -167,6 +168,16 @@ class Check(models.Model):
     def check_single_metric(self, target, value):
         warning_func = self.OPERATOR_FUNCS[self.warning_operator]
         critical_func = self.OPERATOR_FUNCS[self.critical_operator]
+        if self.host.strip() != '':
+            host = self.host
+        else:
+            host = target
+        if value is None:
+            return self.build_check_dict(
+                Status.unknown,
+                'got no valid data points for "%s"' % target,
+                host
+            )
         if critical_func(value, self.critical_value):
             status = Status.critical
             operator = self.get_critical_operator_display()
@@ -189,10 +200,6 @@ class Check(models.Model):
             threshold_value=threshold_value,
             value=value
         )
-        if self.host.strip() != '':
-            host = self.host
-        else:
-            host = target
         return self.build_check_dict(status,
                                      output,
                                      host,
