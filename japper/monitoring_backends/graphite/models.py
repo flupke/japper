@@ -41,7 +41,7 @@ class MonitoringSource(MonitoringSourceBase):
         client = self.create_client()
         ret = []
         for check in self.checks.all():
-            ret.extend(check.run(client))
+            ret.extend(check.run(self, client))
         if self.search_ec2_public_dns:
             for check_dict in ret:
                 public_dns = search_public_dns(check_dict['host'],
@@ -124,8 +124,8 @@ class Check(models.Model):
     name = models.CharField(max_length=255)
     enabled = models.BooleanField(default=True)
     query = models.TextField(
-        help_text='The graphite path to evaluate, you may use functions '
-        'here. It must ouptut a single metric.')
+        help_text='The graphite query to evaluate, you may use functions '
+        'here. It may output multiple metrics.')
     metric_aggregator = models.SmallIntegerField(
         choices=AGGREGATORS,
         default=AVERAGE,
