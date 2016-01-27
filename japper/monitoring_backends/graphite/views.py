@@ -1,8 +1,10 @@
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import HttpResponseRedirect
 from vanilla import CreateView, UpdateView, DeleteView, DetailView
+from robgracli import GraphiteClient
+from robgracli.exceptions import BadResponse
 
-from japper.views import BreadcrumbsMixin
+from japper.views import BreadcrumbsMixin, JsonView
 from .models import MonitoringSource, Check
 
 
@@ -67,6 +69,11 @@ class CheckCRUDViewMixin(object):
         check = self.object
         return reverse('graphite_checks', kwargs={'pk': check.source.pk})
 
+    def get_context_data(self, **kwargs):
+        if 'source' not in kwargs:
+            kwargs['source'] = self.get_object().source
+        return super(CheckCRUDViewMixin, self).get_context_data(**kwargs)
+
 
 class CreateCheck(CheckCRUDViewMixin, BreadcrumbsMixin, CreateView):
 
@@ -83,6 +90,11 @@ class CreateCheck(CheckCRUDViewMixin, BreadcrumbsMixin, CreateView):
                 reverse('graphite_checks', kwargs={'pk': source.pk})),
             ('Create check', None),
         ]
+
+    def get_context_data(self, **kwargs):
+        if 'source' not in kwargs:
+            kwargs['source'] = self.get_source()
+        return super(CreateCheck, self).get_context_data(**kwargs)
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
@@ -121,3 +133,32 @@ class DeleteCheck(CheckCRUDViewMixin, BreadcrumbsMixin, DeleteView):
             (check, check.get_absolute_url()),
             ('Delete', None),
         ]
+
+
+class GraphiteQueryPreview(JsonView):
+    '''
+    Used to dynamically preview graphite queries result.
+    '''
+
+    def get(self, request):
+        endpoint = request.GET['endpoint']
+        query = request.GET['query']
+        client = GraphiteClient(endpoint)
+        try:
+            result = client.aggregate(query)
+        except BadResponse as exc:
+            return {
+                'status': 'error',
+                'error': exc.response.text,
+                'error_type': 'html',
+            }
+        except Exception as exc:
+            return {
+                'status': 'error',
+                'error': unicode(exc),
+                'error_type': 'text',
+            }
+        return {
+            'status': 'ok',
+            'result': result,
+        }

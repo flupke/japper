@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 from .views import (CreateMonitoringSource, UpdateMonitoringSource,
                     DeleteMonitoringSource, ChecksList, CreateCheck,
-                    UpdateCheck, DeleteCheck)
+                    UpdateCheck, DeleteCheck, GraphiteQueryPreview)
 
 
 urlpatterns = patterns(
@@ -29,4 +29,7 @@ urlpatterns = patterns(
     url(r'^checks/(?P<pk>\d+)/delete/$',
         login_required(DeleteCheck.as_view()),
         name='graphite_delete_check'),
+    url(r'^query-preview/$',
+        login_required(GraphiteQueryPreview.as_view()),
+        name='graphite_query_preview'),
 )

@@ -6,3 +6,9 @@
 </div>
 {% include 'include/submit_delete_form.html' with delete_view='graphite_delete_check' %}
 {% endblock %}
+
+{% block page_scripts %}
+<script type="text/javascript">
+{% include 'graphite/include/graphite_preview.js' with graphite_endpoint=source.endpoint query_id='id_query' anchor_id='hint_id_query' %}
+</script>
+{% endblock %}
