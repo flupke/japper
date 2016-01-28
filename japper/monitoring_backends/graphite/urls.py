@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 
 from .views import (CreateMonitoringSource, UpdateMonitoringSource,
                     DeleteMonitoringSource, ChecksList, CreateCheck,
-                    UpdateCheck, DeleteCheck, GraphiteQueryPreview)
+                    UpdateCheck, DeleteCheck, GraphiteQueryPreview,
+                    GraphiteFindMetrics)
 
 
 urlpatterns = patterns(
@@ -32,4 +33,7 @@ urlpatterns = patterns(
     url(r'^query-preview/$',
         login_required(GraphiteQueryPreview.as_view()),
         name='graphite_query_preview'),
+    url(r'^find-metrics/$',
+        login_required(GraphiteFindMetrics.as_view()),
+        name='graphite_find_metrics'),
 )

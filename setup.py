@@ -39,7 +39,7 @@ install_requires = [
     'raven==4.2.3',
     'boto==2.34.0',
     'python-redis-lock[django]==1.0.0',
-    'robust-graphite-client==1.0.2',
+    'robust-graphite-client==1.1.0',
     'requests[security]==2.9.1',
 ]
 

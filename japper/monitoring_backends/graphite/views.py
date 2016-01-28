@@ -162,3 +162,32 @@ class GraphiteQueryPreview(JsonView):
             'status': 'ok',
             'result': result,
         }
+
+
+class GraphiteFindMetrics(JsonView):
+    '''
+    Used to dynamically find metrics.
+    '''
+
+    def get(self, request):
+        endpoint = request.GET['endpoint']
+        query = request.GET['query']
+        client = GraphiteClient(endpoint)
+        try:
+            result = client.find_metrics(query)
+        except BadResponse as exc:
+            return {
+                'status': 'error',
+                'error': exc.response.text,
+                'error_type': 'html',
+            }
+        except Exception as exc:
+            return {
+                'status': 'error',
+                'error': unicode(exc),
+                'error_type': 'text',
+            }
+        return {
+            'status': 'ok',
+            'result': result,
+        }

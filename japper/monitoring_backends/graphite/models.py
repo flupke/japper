@@ -26,8 +26,11 @@ class MonitoringSource(MonitoringSourceBase):
     dead_hosts_query = models.TextField(
         blank=True,
         default='',
-        help_text='A graphite query that targets dead servers, used to remove '
-        'dead dynamic hosts from Japper.')
+        help_text='A graphite search query that targets dead servers '
+        'hostnames, used to remove dead dynamic hosts from Japper. For '
+        'example if dead servers metrics are stored in '
+        '"dead-servers.[hostname].cpu.idle", the query to target the hostname '
+        'would be "dead-servers.*".')
     search_ec2_public_dns = models.BooleanField(
         default=False,
         help_text='Use EC2 API to retrieve the public DNS of the hosts from '
@@ -71,7 +74,22 @@ class MonitoringSource(MonitoringSourceBase):
         if not self.dynamic_hosts:
             return []
         client = self.create_client()
-        client.get_metric(self.dead_hosts_query, allow_multiple=True)
+        result = client.find_metrics(self.dead_hosts_query)
+        hostnames = [e['text'] for e in result]
+        if self.search_ec2_public_dns:
+            ret = []
+            for host in hostnames:
+                public_dns = search_public_dns(host,
+                                               self.aws_region,
+                                               self.aws_access_key_id,
+                                               self.aws_secret_access_key)
+                if public_dns is not None:
+                    ret.append(public_dns)
+                else:
+                    ret.append(host)
+        else:
+            ret = hostnames
+        return ret
 
     def get_associated_states_hosts(self):
         content_type = ContentType.objects.get_for_model(self)

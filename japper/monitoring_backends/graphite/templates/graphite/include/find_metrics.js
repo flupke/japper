@@ -1,13 +1,14 @@
 function _render_graphite_query_preview(data, after_id)
 {
-    var html = 'Query preview: ';
-    if (Object.keys(data.result).length) {
+    var html = 'Metrics: ';
+    if (data.result.length) {
         html += '<ul>';
         $.each(
             data.result,
-            function(target, value)
+            function(index, entry)
             {
-                html += '<li>' + target + ": " + value + '</li>';
+                console.log(entry);
+                html += '<li>' + entry.text + '</li>';
             }
         );
         html += '</ul>';
@@ -22,7 +23,7 @@ $(function() {
         function()
         {
             $.getJSON(
-                '{% url "graphite_query_preview" %}',
+                '{% url "graphite_find_metrics" %}',
                 {
                     query: $('#{{ query_id }}').val(),
                     {% if graphite_endpoint_id %}

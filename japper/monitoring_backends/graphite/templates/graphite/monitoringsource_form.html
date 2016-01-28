@@ -7,9 +7,9 @@
 {% include 'include/submit_delete_form.html' with delete_view='graphite_delete_monitoring_source' %}
 {% endblock %}
 
-
 {% block page_scripts %}
 <script type="text/javascript">
-{% include 'graphite/include/graphite_preview.js' with graphite_endpoint_id='id_endpoint' query_id='id_dead_hosts_query' anchor_id='hint_id_dead_hosts_query' %}
+{% include 'graphite/include/common.js' %}
+{% include 'graphite/include/find_metrics.js' with graphite_endpoint_id='id_endpoint' query_id='id_dead_hosts_query' anchor_id='hint_id_dead_hosts_query' %}
 </script>
 {% endblock %}
