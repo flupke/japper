@@ -3,10 +3,11 @@ from django.core.cache import cache
 from boto import ec2
 
 
-def search_public_dns(private_dns, aws_region, aws_access_key_id,
+def search_public_dns(name, aws_region, aws_access_key_id,
                       aws_secret_access_key):
     '''
-    Retrieve the public DNS name of an EC2 instance from its private DNS name.
+    Retrieve the public DNS name of an EC2 instance from its private DNS name
+    or the first part of its public DNS name.
 
     Return the public DNS name, or None if it can't be found for these AWS
     credentials.
@@ -16,7 +17,7 @@ def search_public_dns(private_dns, aws_region, aws_access_key_id,
     with cache.lock('japper:search_ec2_public_dns',
                     expire=settings.EC2_DNS_LOCK_EXPIRE):
         # Look in cache
-        host_cache_key = _get_cache_key(aws_region, private_dns)
+        host_cache_key = _get_cache_key(aws_region, name)
         resolved_host = cache.get(host_cache_key)
         # Update cache if host is not in it
         if resolved_host is None:
@@ -35,9 +36,12 @@ def _update_ec2_names_cache(aws_region, aws_access_key_id,
     for instance in conn.get_only_instances():
         if not instance.dns_name or not instance.private_dns_name:
             continue
-        cache_key = _get_cache_key(aws_region, instance.private_dns_name)
-        cache.set(cache_key, instance.dns_name,
-                  settings.EC2_DNS_NAMES_CACHE_TTL)
+        keys = (
+            _get_cache_key(aws_region, instance.private_dns_name),
+            _get_cache_key(aws_region, instance.dns_name.partition('.')[0]),
+        )
+        for key in keys:
+            cache.set(key, instance.dns_name, settings.EC2_DNS_NAMES_CACHE_TTL)
 
 
 def _get_ec2_connection(aws_region, aws_access_key_id, aws_secret_access_key):
@@ -48,5 +52,5 @@ def _get_ec2_connection(aws_region, aws_access_key_id, aws_secret_access_key):
     )
 
 
-def _get_cache_key(aws_region, private_dns):
-    return 'japper:%s:%s' % (aws_region, private_dns)
+def _get_cache_key(aws_region, name):
+    return 'japper:%s:%s' % (aws_region, name)
