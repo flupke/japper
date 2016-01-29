@@ -156,7 +156,8 @@ class Check(models.Model):
         'by hostname and mount point, e.g. '
         '"servers.[hostname].disk.[mount_point].free_percent", metrics '
         'should be aliased as "[hostname].[mount_point]" (using the '
-        '"aliasSub()" graphite function).')
+        '"aliasSub()" graphite function). It will produce [num_hostnames] * '
+        '[num_mount_points] separate checks.')
     metric_aggregator = models.SmallIntegerField(
         choices=AGGREGATORS,
         default=AVERAGE,
