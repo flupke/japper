@@ -142,7 +142,7 @@ class GraphiteQueryPreview(JsonView):
 
     def get(self, request):
         endpoint = request.GET['endpoint']
-        aggregate_over = request.GET['aggregate_over']
+        aggregate_over = int(request.GET['aggregate_over'])
         query = request.GET['query']
         client = GraphiteClient(endpoint)
         try:
