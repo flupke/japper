@@ -26,9 +26,9 @@ $(function() {
                 {
                     query: $('#{{ query_id }}').val(),
                     {% if graphite_endpoint_id %}
-                    endpoint: $('#{{ graphite_endpoint_id }}').val()
+                    endpoint: $('#{{ graphite_endpoint_id }}').val(),
                     {% else %}
-                    endpoint: '{{ graphite_endpoint }}'
+                    endpoint: '{{ graphite_endpoint }}',
                     {% endif %}
                     {% if graphite_aggregate_over_id %}
                     aggregate_over: $('#{{ graphite_aggregate_over_id }}').val()
