@@ -26,7 +26,7 @@ def test_check_run():
             'host': 'foo.com',
             'status': Status.unknown,
             'metrics': {},
-            'output': 'got no valid data points for "foo"',
+            'output': 'got no valid data points for "check"',
         }]
 
     check = Check(query='metric.path', host='foo.com', name='check',

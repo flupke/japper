@@ -1,4 +1,5 @@
 import operator
+import collections
 
 from django.db import models
 from django.core.urlresolvers import reverse
@@ -136,8 +137,8 @@ class Check(models.Model):
         (MIN, 'min'),
     ]
     AGGREGATOR_FUNCS = [average, max, min]
-    PROBLEM_FMT = '{status} - {metric} {operator} {threshold_value} ({value})'
-    PASSING_FMT = '{status} - {metric} {operator} {value}'
+    PROBLEM_FMT = '{metric} {operator} {threshold_value} ({value})'
+    PASSING_FMT = '{metric} {operator} {value}'
 
     source = models.ForeignKey(MonitoringSource, related_name='checks',
                                editable=False)
@@ -147,6 +148,15 @@ class Check(models.Model):
     query = models.TextField(
         help_text='The graphite query to evaluate, you may use functions '
         'here. It may output multiple metrics.')
+    matrix_metrics = models.BooleanField(
+        default=False,
+        help_text='If checked, expect a matrix result from the graphite '
+        'query. This means that the metrics returned are indexed by hostname '
+        'and some other axis. For example if you have disk metrics indexed '
+        'by hostname and mount point, e.g. '
+        '"servers.[hostname].disk.[mount_point].free_percent", metrics '
+        'should be aliased as "[hostname].[mount_point]" (using the '
+        '"aliasSub()" graphite function).')
     metric_aggregator = models.SmallIntegerField(
         choices=AGGREGATORS,
         default=AVERAGE,
@@ -165,6 +175,7 @@ class Check(models.Model):
     critical_value = models.FloatField()
 
     def run(self, source, client, aggregate_over=60):
+        # Query graphite
         agg_func = self.AGGREGATOR_FUNCS[self.metric_aggregator]
         try:
             result = client.aggregate(self.query,
@@ -175,60 +186,92 @@ class Check(models.Model):
             hosts = source.get_associated_states_hosts()
             ret = []
             for host in hosts:
-                check_dict = self.build_check_dict(
+                check_dict = self._build_check_dict(
                     Status.unknown,
                     'unexpected error: %s' % exc,
                     host
                 )
                 ret.append(check_dict)
             return ret
-        ret = []
+        # Aggregate metrics by host
+        metrics = collections.defaultdict(dict)
         for target, value in result.items():
-            check_dict = self.check_single_metric(target, value)
+            host, name = self._get_host_and_name_from_target(target)
+            metrics[host][name] = value
+        # Create checks
+        ret = []
+        for host, metrics in metrics.items():
+            check_dict = self._check_metrics(host, metrics)
             ret.append(check_dict)
         return ret
 
-    def check_single_metric(self, target, value):
-        warning_func = self.OPERATOR_FUNCS[self.warning_operator]
-        critical_func = self.OPERATOR_FUNCS[self.critical_operator]
+    def _get_host_and_name_from_target(self, target):
         if self.host.strip() != '':
             host = self.host
+            name = self.name
         else:
-            host = target
-        if value is None:
-            return self.build_check_dict(
-                Status.unknown,
-                'got no valid data points for "%s"' % target,
-                host
-            )
-        if critical_func(value, self.critical_value):
+            if self.matrix_metrics:
+                host, _, name = target.partition('.')
+            else:
+                host = target
+                name = self.name
+        return host, name
+
+    def _check_metrics(self, host, metrics):
+        warning_func = self.OPERATOR_FUNCS[self.warning_operator]
+        critical_func = self.OPERATOR_FUNCS[self.critical_operator]
+        status = None
+        critical = False
+        warning = False
+        outputs = []
+        for metric_name, metric_value in metrics.items():
+            if metric_value is None:
+                # A single unknown value is sufficient to make the whole check
+                # fail with an unknown state
+                return self._build_check_dict(
+                    Status.unknown,
+                    'got no valid data points for "%s"' % metric_name,
+                    host
+                )
+            if critical_func(metric_value, self.critical_value):
+                critical = True
+                output = self.PROBLEM_FMT.format(
+                    metric=metric_name,
+                    operator=self.get_critical_operator_display(),
+                    threshold_value=self.critical_value,
+                    value=metric_value
+                )
+            elif warning_func(metric_value, self.warning_value):
+                warning = True
+                output = self.PROBLEM_FMT.format(
+                    metric=metric_name,
+                    operator=self.get_warning_operator_display(),
+                    threshold_value=self.warning_value,
+                    value=metric_value
+                )
+            else:
+                status = Status.passing
+                output = self.PASSING_FMT.format(
+                    metric=metric_name,
+                    operator='=',
+                    value=metric_value
+                )
+            outputs.append(output)
+        if critical:
             status = Status.critical
-            operator = self.get_critical_operator_display()
-            threshold_value = self.critical_value
-            output_fmt = self.PROBLEM_FMT
-        elif warning_func(value, self.warning_value):
+        elif warning:
             status = Status.warning
-            operator = self.get_warning_operator_display()
-            threshold_value = self.warning_value
-            output_fmt = self.PROBLEM_FMT
         else:
             status = Status.passing
-            operator = '='
-            threshold_value = None
-            output_fmt = self.PASSING_FMT
-        output = output_fmt.format(
-            status=status.name,
-            metric=self.name,
-            operator=operator,
-            threshold_value=threshold_value,
-            value=value
+        output = '%s - %s' % (status.name, ', '.join(outputs))
+        return self._build_check_dict(
+            status,
+            output,
+            host,
+            metrics=metrics
         )
-        return self.build_check_dict(status,
-                                     output,
-                                     host,
-                                     metrics={self.name: value})
 
-    def build_check_dict(self, status, output, host, metrics={}):
+    def _build_check_dict(self, status, output, host, metrics={}):
         return {
             'name': self.name,
             'host': host,
