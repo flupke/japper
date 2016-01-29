@@ -47,7 +47,7 @@ class MonitoringSource(MonitoringSourceBase):
         client = self.create_client()
         ret = []
         for check in self.checks.all():
-            ret.extend(check.run(self, client))
+            ret.extend(check.run(self, client, self.aggregate_over))
         if self.search_ec2_public_dns:
             for check_dict in ret:
                 public_dns = search_public_dns(check_dict['host'],
@@ -164,11 +164,11 @@ class Check(models.Model):
     critical_operator = models.SmallIntegerField(choices=OPERATORS, default=GE)
     critical_value = models.FloatField()
 
-    def run(self, source, client):
+    def run(self, source, client, aggregate_over=60):
         agg_func = self.AGGREGATOR_FUNCS[self.metric_aggregator]
         try:
             result = client.aggregate(self.query,
-                                      self.source.aggregate_over,
+                                      aggregate_over,
                                       agg_func)
         except GraphiteException as exc:
             raven_client.captureException()
