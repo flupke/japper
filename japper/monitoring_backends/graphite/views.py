@@ -142,10 +142,11 @@ class GraphiteQueryPreview(JsonView):
 
     def get(self, request):
         endpoint = request.GET['endpoint']
+        aggregate_over = request.GET['aggregate_over']
         query = request.GET['query']
         client = GraphiteClient(endpoint)
         try:
-            result = client.aggregate(query)
+            result = client.aggregate(query, aggregate_over)
         except BadResponse as exc:
             return {
                 'status': 'error',

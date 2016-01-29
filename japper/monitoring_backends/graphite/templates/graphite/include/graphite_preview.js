@@ -30,6 +30,11 @@ $(function() {
                     {% else %}
                     endpoint: '{{ graphite_endpoint }}'
                     {% endif %}
+                    {% if graphite_aggregate_over_id %}
+                    aggregate_over: $('#{{ graphite_aggregate_over_id }}').val()
+                    {% else %}
+                    aggregate_over: '{{ graphite_aggregate_over }}'
+                    {% endif %}
                 },
                 function(data)
                 {

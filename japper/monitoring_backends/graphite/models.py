@@ -19,6 +19,9 @@ class MonitoringSource(MonitoringSourceBase):
     endpoint = models.CharField(
         max_length=4096,
         help_text='The base URL of the graphite endpoint')
+    aggregate_over = models.IntegerField(
+        default=60,
+        help_text='Aggregate metrics over this number of seconds')
     dynamic_hosts = models.BooleanField(
         default=False, help_text='Use this option when the list of hosts from '
         'this source is dynamic (e.g. when using autoscaling on EC2) and '
@@ -164,7 +167,9 @@ class Check(models.Model):
     def run(self, source, client):
         agg_func = self.AGGREGATOR_FUNCS[self.metric_aggregator]
         try:
-            result = client.aggregate(self.query, aggregator=agg_func)
+            result = client.aggregate(self.query,
+                                      self.source.aggregate_over,
+                                      agg_func)
         except GraphiteException as exc:
             raven_client.captureException()
             hosts = source.get_associated_states_hosts()
